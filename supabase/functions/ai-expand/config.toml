@@ -1,0 +1,5 @@
+# Deshabilita la verificación de JWT a nivel de gateway para esta función.
+# La función es de uso interno (app propia) y está protegida por la API key
+# de OpenAI que vive en los secrets del servidor (nunca se expone al cliente).
+[functions.ai-expand]
+verify_jwt = false
