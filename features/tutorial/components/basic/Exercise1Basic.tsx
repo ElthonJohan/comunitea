@@ -113,8 +113,8 @@ const styles = StyleSheet.create({
     },
     fingerHint: {
         position: 'absolute',
-        top: -6,
-        right: 12,
+        bottom: -18,
+        right: 32,
         zIndex: 2,
     },
     fingerImg: {

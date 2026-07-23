@@ -91,7 +91,7 @@ export default function Exercise3Basic({ onSuccess, onFail, onReplay }: Props) {
 
     const hintTranslate = slideHint.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 56],
+        outputRange: [0, 160],
     });
 
     const bubbleText =
@@ -103,29 +103,34 @@ export default function Exercise3Basic({ onSuccess, onFail, onReplay }: Props) {
         <View style={styles.root}>
             <TutorialAvatar mood="neutral" />
             <VoiceBubble text={bubbleText} onReplay={onReplay} />
-            <View style={styles.arrowRow}>
-                <Text style={styles.arrow}>——</Text>
-                <Text style={styles.arrowHead}>→</Text>
-            </View>
-            {dragPhase === 'base' ? (
-                <AnimatedImage
-                    source={TUTORIAL_POINTING_HAND_PNG}
-                    style={[styles.dragFinger, { transform: [{ translateX: hintTranslate }] }]}
-                    accessibilityLabel="Arrastra"
-                />
-            ) : null}
+
             <View style={styles.tagsRow}>
                 <Text style={styles.tag}>tocar aquí</Text>
                 <Text style={styles.tag}>soltar aquí</Text>
             </View>
-            <DragDropArea
-                hitSlop={40}
-                onDragStart={() => setDragPhase('dragging')}
-                onSuccess={onSuccess}
-                onFail={onFail}
-                sourceContent={<SourceZone />}
-                targetContent={<TargetZone pulsing={dragPhase === 'dragging'} />}
-            />
+
+            <View style={styles.dragContainer}>
+                {/* <View style={styles.arrowRow} pointerEvents="none">
+                    <Text style={styles.arrow}>——</Text>
+                    <Text style={styles.arrowHead}>→</Text>
+                </View> */}
+                {dragPhase === 'base' ? (
+                    <AnimatedImage
+                        source={TUTORIAL_POINTING_HAND_PNG}
+                        style={[styles.dragFinger, { transform: [{ translateX: hintTranslate }] }]}
+                        accessibilityLabel="Arrastra"
+                    />
+                ) : null}
+                <DragDropArea
+                    hitSlop={40}
+                    onDragStart={() => setDragPhase('dragging')}
+                    onSuccess={onSuccess}
+                    onFail={onFail}
+                    sourceContent={<SourceZone />}
+                    targetContent={<TargetZone pulsing={dragPhase === 'dragging'} />}
+                />
+            </View>
+
             {dragPhase === 'dragging' ? (
                 <Text style={styles.draggingLine}>arrastrando...</Text>
             ) : null}
@@ -146,11 +151,20 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingBottom: 8,
     },
+    dragContainer: {
+        position: 'relative',
+        width: '100%',
+        marginTop: 10,
+    },
     arrowRow: {
+        position: 'absolute',
+        top: 48,
+        left: 0,
+        right: 0,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginVertical: 4,
+        zIndex: 1,
     },
     arrow: {
         fontSize: 18,
@@ -163,12 +177,13 @@ const styles = StyleSheet.create({
         marginLeft: 2,
     },
     dragFinger: {
-        width: 40,
-        height: 40,
+        position: 'absolute',
+        bottom: -22,
+        left: '22%',
+        width: 44,
+        height: 44,
         resizeMode: 'contain',
-        alignSelf: 'flex-start',
-        marginLeft: '12%',
-        marginBottom: 4,
+        zIndex: 10,
     },
     zone: {
         width: 128,

@@ -1,17 +1,41 @@
+import { Colors } from '../../../constants/Colors';
+
 /**
- * Colores específicos del tutorial (mockups morado / verde / naranja / oro).
- * Complementan el theme global.
+ * Colores del tutorial alineados dinámicamente con la paleta de diseño principal
+ * de constants/Colors.ts (Sage, Rojo, Azul).
  */
 export const TutorialTheme = {
-    baseBg: '#EDE8F5',
-    baseHeader: '#5B4B8A',
-    correctBg: '#E8F5E9',
-    correctAccent: '#4CAF50',
-    correctButton: '#2E7D32',
-    incorrectBg: '#FFF3E0',
-    incorrectAccent: '#FF7043',
-    incorrectButton: '#F4511E',
-    celebrationBg: '#FFF8E1',
-    celebrationGold: '#FFD700',
-    celebrationAccent: '#F9A825',
+    get baseBg() {
+        return Colors.surface; // Linen (#f8f4e3)
+    },
+    get baseHeader() {
+        return (Colors as any).primaryDark || (Colors as any).primary;
+    },
+    get correctBg() {
+        return '#f2f7f4'; // Verde pastel suave alineado con success
+    },
+    get correctAccent() {
+        return Colors.success; // Verde Sage (#5a7a62)
+    },
+    get correctButton() {
+        return Colors.success;
+    },
+    get incorrectBg() {
+        return '#faf0ef'; // Rojo pastel suave alineado con danger
+    },
+    get incorrectAccent() {
+        return Colors.danger; // Rojo Pálido (#b85c52)
+    },
+    get incorrectButton() {
+        return Colors.danger;
+    },
+    get celebrationBg() {
+        return Colors.surface; // Linen (#f8f4e3)
+    },
+    get celebrationGold() {
+        return Colors.warning; // Amarillo/Oro (#c9a227)
+    },
+    get celebrationAccent() {
+        return Colors.warning;
+    },
 } as const;

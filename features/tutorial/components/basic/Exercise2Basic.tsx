@@ -62,10 +62,10 @@ export default function Exercise2Basic({ onCorrect, onWrong, onReplay }: Props) 
             <Text style={styles.sectionLabel}>ELIGE ABAJO</Text>
             <View style={styles.row}>
                 <View style={styles.choiceWrap}>
-                    <Animated.View style={{ transform: [{ translateY: hintY }] }}>
+                    <ChoicePicto emoji="🍎" label="MANZANA" onPress={onCorrect} />
+                    <Animated.View style={[styles.fingerContainer, { transform: [{ translateY: hintY }] }]}>
                         <Image source={TUTORIAL_POINTING_HAND_PNG} style={styles.finger} accessibilityLabel="" />
                     </Animated.View>
-                    <ChoicePicto emoji="🍎" label="MANZANA" onPress={onCorrect} />
                 </View>
                 <ChoicePicto emoji="🚗" label="COCHE" onPress={onWrong} />
             </View>
@@ -124,11 +124,17 @@ const styles = StyleSheet.create({
     },
     choiceWrap: {
         alignItems: 'center',
+        position: 'relative',
+    },
+    fingerContainer: {
+        position: 'absolute',
+        bottom: -25,
+        right: 15,
+        zIndex: 2,
     },
     finger: {
-        width: 40,
-        height: 40,
-        marginBottom: 2,
+        width: 44,
+        height: 44,
         resizeMode: 'contain',
     },
     choice: {
