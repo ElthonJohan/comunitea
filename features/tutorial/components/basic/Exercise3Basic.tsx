@@ -14,6 +14,7 @@ type DragPhase = 'base' | 'dragging';
 type Props = {
     onSuccess: () => void;
     onFail: () => void;
+    onReplay?: () => void;
 };
 
 function SourceZone() {
@@ -72,7 +73,7 @@ function TargetZone({ pulsing }: { pulsing: boolean }) {
     );
 }
 
-export default function Exercise3Basic({ onSuccess, onFail }: Props) {
+export default function Exercise3Basic({ onSuccess, onFail, onReplay }: Props) {
     const [dragPhase, setDragPhase] = useState<DragPhase>('base');
     const slideHint = useRef(new Animated.Value(0)).current;
 
@@ -101,7 +102,7 @@ export default function Exercise3Basic({ onSuccess, onFail }: Props) {
     return (
         <View style={styles.root}>
             <TutorialAvatar mood="neutral" />
-            <VoiceBubble text={bubbleText} />
+            <VoiceBubble text={bubbleText} onReplay={onReplay} />
             <View style={styles.arrowRow}>
                 <Text style={styles.arrow}>——</Text>
                 <Text style={styles.arrowHead}>→</Text>

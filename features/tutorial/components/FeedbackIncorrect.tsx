@@ -12,6 +12,7 @@ type Props = {
     children?: React.ReactNode;
     /** Muestra avatar del niño con estado triste (tutorial básico). */
     showAvatar?: boolean;
+    onReplay?: () => void;
 };
 
 export default function FeedbackIncorrect({
@@ -20,6 +21,7 @@ export default function FeedbackIncorrect({
     onRetry,
     children,
     showAvatar,
+    onReplay,
 }: Props) {
     const shake = useRef(new Animated.Value(0)).current;
 
@@ -38,7 +40,7 @@ export default function FeedbackIncorrect({
             {showAvatar ? (
                 <>
                     <TutorialAvatar mood="sad" />
-                    <VoiceBubble text={title} />
+                    <VoiceBubble text={title} onReplay={onReplay} />
                     <Animated.Text style={[styles.xIcon, styles.xAfterBubble, { transform: [{ translateX: shake }] }]}>
                         ❌
                     </Animated.Text>

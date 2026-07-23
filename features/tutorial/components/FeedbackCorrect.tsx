@@ -12,6 +12,7 @@ type Props = {
     onContinue: () => void;
     /** Contenido opcional entre la burbuja y el botón (p. ej. pictograma de refuerzo). */
     children?: React.ReactNode;
+    onReplay?: () => void;
 };
 
 export default function FeedbackCorrect({
@@ -19,6 +20,7 @@ export default function FeedbackCorrect({
     buttonLabel = 'Continuar →',
     onContinue,
     children,
+    onReplay,
 }: Props) {
     const confettiRef = useRef<ConfettiCannon>(null);
     const s1 = useRef(new Animated.Value(0)).current;
@@ -64,7 +66,7 @@ export default function FeedbackCorrect({
                 <Animated.Text style={[styles.star, starStyle(s3)]}>⭐</Animated.Text>
             </View>
             <TutorialAvatar mood="happy" />
-            <VoiceBubble text={message} />
+            <VoiceBubble text={message} onReplay={onReplay} />
             {children}
             <View style={styles.spacer} />
             <TouchableOpacity style={styles.btn} onPress={onContinue} activeOpacity={0.85}>

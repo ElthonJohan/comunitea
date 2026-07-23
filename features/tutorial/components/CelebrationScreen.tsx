@@ -20,6 +20,7 @@ type Props = {
     subtitle?: string;
     achievements?: string[];
     buttonLabel?: string;
+    onReplay?: () => void;
 };
 
 export default function CelebrationScreen({
@@ -29,6 +30,7 @@ export default function CelebrationScreen({
     subtitle = '¡Muy bien! Completaste el tutorial.',
     achievements = DEFAULT_ACHIEVEMENTS,
     buttonLabel = 'Empezar a usar la app →',
+    onReplay,
 }: Props) {
     const [burst, setBurst] = useState(0);
     const jump = useRef(new Animated.Value(0)).current;
@@ -112,7 +114,7 @@ export default function CelebrationScreen({
                 <Text style={styles.goldStar}>⭐</Text>
                 <Text style={styles.goldStar}>⭐</Text>
             </View>
-            <VoiceBubble text={subtitle} dark />
+            <VoiceBubble text={subtitle} dark onReplay={onReplay} />
             <View style={styles.list}>
                 {achievements.map((label, i) => (
                     <Animated.View key={`${label}-${i}`} style={[styles.item, rowStyle(i)]}>

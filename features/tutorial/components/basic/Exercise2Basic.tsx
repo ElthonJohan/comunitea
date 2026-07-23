@@ -9,6 +9,7 @@ import VoiceBubble from '../VoiceBubble';
 type Props = {
     onCorrect: () => void;
     onWrong: () => void;
+    onReplay?: () => void;
 };
 
 function ChoicePicto({
@@ -34,7 +35,7 @@ function ChoicePicto({
     );
 }
 
-export default function Exercise2Basic({ onCorrect, onWrong }: Props) {
+export default function Exercise2Basic({ onCorrect, onWrong, onReplay }: Props) {
     const hintY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -51,7 +52,7 @@ export default function Exercise2Basic({ onCorrect, onWrong }: Props) {
     return (
         <View style={styles.root}>
             <TutorialAvatar mood="neutral" />
-            <VoiceBubble text="Mira la imagen / Toca la misma" />
+            <VoiceBubble text="Mira la imagen / Toca la misma" onReplay={onReplay} />
             <Text style={styles.sectionLabel}>MODELO (ARRIBA)</Text>
             <View style={styles.modelBox}>
                 <Text style={styles.modelEmoji}>🍎</Text>

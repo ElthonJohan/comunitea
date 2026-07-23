@@ -9,9 +9,10 @@ import VoiceBubble from './VoiceBubble';
 
 type Props = {
     onContinue: () => void;
+    onReplay?: () => void;
 };
 
-export default function Exercise3Complete({ onContinue }: Props) {
+export default function Exercise3Complete({ onContinue, onReplay }: Props) {
     const confettiRef = useRef<ConfettiCannon>(null);
     const s1 = useRef(new Animated.Value(0)).current;
     const s2 = useRef(new Animated.Value(0)).current;
@@ -53,7 +54,7 @@ export default function Exercise3Complete({ onContinue }: Props) {
                 <Animated.Text style={[styles.star, star(s3)]}>⭐</Animated.Text>
             </View>
             <TutorialAvatar mood="happy" />
-            <VoiceBubble text="¡Excelente!" />
+            <VoiceBubble text="¡Excelente!" onReplay={onReplay} />
             <View style={styles.strip}>
                 <View style={styles.chip}>
                     <Text style={styles.chipEmoji}>🧑</Text>

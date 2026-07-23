@@ -8,9 +8,10 @@ import VoiceBubble from '../VoiceBubble';
 
 type Props = {
     onCorrect: () => void;
+    onReplay?: () => void;
 };
 
-export default function Exercise1Basic({ onCorrect }: Props) {
+export default function Exercise1Basic({ onCorrect, onReplay }: Props) {
     const pulse = useRef(new Animated.Value(1)).current;
     const borderPulse = useRef(new Animated.Value(0.5)).current;
     const hintY = useRef(new Animated.Value(0)).current;
@@ -52,7 +53,7 @@ export default function Exercise1Basic({ onCorrect }: Props) {
         <Pressable style={styles.fullTouch} onPress={onCorrect} accessibilityRole="button">
             <View style={styles.inner} pointerEvents="box-none">
                 <TutorialAvatar mood="neutral" />
-                <VoiceBubble text="Mira... Toca la imagen" />
+                <VoiceBubble text="Mira... Toca la imagen" onReplay={onReplay} />
                 <View style={styles.centerArea}>
                     <Animated.View style={{ transform: [{ scale: pulse }] }}>
                         <Animated.View

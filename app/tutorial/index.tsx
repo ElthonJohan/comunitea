@@ -94,15 +94,22 @@ export default function TutorialIndex() {
                             bumpAttempt('ex0');
                             setCurrentStep('ex0_incorrect');
                         }}
+                        onReplay={() => speakForStep('ex0_base')}
                     />
                 );
             case 'ex0_correct':
                 return (
-                    <FeedbackCorrect onContinue={() => setCurrentStep('ex1_base')} />
+                    <FeedbackCorrect
+                        onContinue={() => setCurrentStep('ex1_base')}
+                        onReplay={() => speakForStep('ex0_correct')}
+                    />
                 );
             case 'ex0_incorrect':
                 return (
-                    <FeedbackIncorrect onRetry={() => setCurrentStep('ex0_base')}>
+                    <FeedbackIncorrect
+                        onRetry={() => setCurrentStep('ex0_base')}
+                        onReplay={() => speakForStep('ex0_incorrect')}
+                    >
                         <TouchableOpacity
                             style={styles.reminderPicto}
                             activeOpacity={1}
@@ -125,11 +132,17 @@ export default function TutorialIndex() {
                 );
             case 'ex1_correct':
                 return (
-                    <FeedbackCorrect onContinue={() => setCurrentStep('ex2_base')} />
+                    <FeedbackCorrect
+                        onContinue={() => setCurrentStep('ex2_base')}
+                        onReplay={() => speakForStep('ex1_correct')}
+                    />
                 );
             case 'ex1_incorrect':
                 return (
-                    <FeedbackIncorrect onRetry={() => setCurrentStep('ex1_base')}>
+                    <FeedbackIncorrect
+                        onRetry={() => setCurrentStep('ex1_base')}
+                        onReplay={() => speakForStep('ex1_incorrect')}
+                    >
                         <TouchableOpacity
                             style={styles.reminderPicto}
                             activeOpacity={1}
@@ -152,11 +165,17 @@ export default function TutorialIndex() {
                 );
             case 'ex2_correct':
                 return (
-                    <FeedbackCorrect onContinue={() => setCurrentStep('ex3_step1')} />
+                    <FeedbackCorrect
+                        onContinue={() => setCurrentStep('ex3_step1')}
+                        onReplay={() => speakForStep('ex2_correct')}
+                    />
                 );
             case 'ex2_incorrect':
                 return (
-                    <FeedbackIncorrect onRetry={() => setCurrentStep('ex2_base')}>
+                    <FeedbackIncorrect
+                        onRetry={() => setCurrentStep('ex2_base')}
+                        onReplay={() => speakForStep('ex2_incorrect')}
+                    >
                         <View style={styles.rowRemind}>
                             <View style={styles.miniPicto}>
                                 <Text style={styles.reminderEmoji}>🥤</Text>
@@ -192,7 +211,10 @@ export default function TutorialIndex() {
                 );
             case 'ex3_incorrect':
                 return (
-                    <FeedbackIncorrect onRetry={() => setCurrentStep('ex3_step2')}>
+                    <FeedbackIncorrect
+                        onRetry={() => setCurrentStep('ex3_step2')}
+                        onReplay={() => speakForStep('ex3_incorrect')}
+                    >
                         <View style={styles.rowRemind}>
                             <View style={styles.miniPicto}>
                                 <Text style={styles.reminderEmoji}>🥤</Text>
@@ -207,10 +229,13 @@ export default function TutorialIndex() {
                 );
             case 'ex3_complete':
                 return (
-                    <Exercise3Complete onContinue={() => setCurrentStep('celebration')} />
+                    <Exercise3Complete
+                        onContinue={() => setCurrentStep('celebration')}
+                        onReplay={() => speakForStep('ex3_complete')}
+                    />
                 );
             case 'celebration':
-                return <CelebrationScreen onFinish={finishApp} />;
+                return <CelebrationScreen onFinish={finishApp} onReplay={playCelebrationNarration} />;
             default:
                 return null;
         }

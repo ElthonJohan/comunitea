@@ -8,14 +8,18 @@ import FingerIndicator from '../FingerIndicator';
 
 type Props = {
     onCorrect: () => void;
+    onReplay?: () => void;
 };
 
-export default function Exercise0Basic({ onCorrect }: Props) {
+export default function Exercise0Basic({ onCorrect, onReplay }: Props) {
     return (
         <View style={styles.root}>
             <View style={styles.content} pointerEvents="box-none">
                 <TutorialAvatar mood="neutral" />
-                <VoiceBubble text="¡Hola! Bienvenido a ComuniTEA. Vamos a jugar. Toca la categoría de ALIMENTOS para empezar." />
+                <VoiceBubble
+                    text="¡Hola! Bienvenido a ComuniTEA. Vamos a jugar. Toca la categoría de ALIMENTOS para empezar."
+                    onReplay={onReplay}
+                />
                 <Text style={styles.hint}>toca la categoría alimentos</Text>
                 <View style={styles.pictoWrap}>
                     <TouchableOpacity

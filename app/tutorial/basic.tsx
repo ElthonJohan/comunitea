@@ -90,12 +90,18 @@ export default function TutorialBasicScreen() {
     const renderBody = () => {
         switch (currentStep) {
             case 'b_ex0_base':
-                return <Exercise0Basic onCorrect={() => setCurrentStep('b_ex0_correct')} />;
+                return (
+                    <Exercise0Basic
+                        onCorrect={() => setCurrentStep('b_ex0_correct')}
+                        onReplay={() => speakForBasicStep('b_ex0_base')}
+                    />
+                );
             case 'b_ex0_correct':
                 return (
                     <FeedbackCorrect
                         message="¡Muy bien!"
                         onContinue={() => setCurrentStep('b_ex1_base')}
+                        onReplay={() => speakForBasicStep('b_ex0_correct')}
                     >
                         <View style={styles.smallPicto}>
                             <Text style={styles.smallEmoji}>🍎</Text>
@@ -104,12 +110,18 @@ export default function TutorialBasicScreen() {
                     </FeedbackCorrect>
                 );
             case 'b_ex1_base':
-                return <Exercise1Basic onCorrect={() => setCurrentStep('b_ex1_correct')} />;
+                return (
+                    <Exercise1Basic
+                        onCorrect={() => setCurrentStep('b_ex1_correct')}
+                        onReplay={() => speakForBasicStep('b_ex1_base')}
+                    />
+                );
             case 'b_ex1_correct':
                 return (
                     <FeedbackCorrect
                         message="¡Muy bien!"
                         onContinue={() => setCurrentStep('b_ex2_base')}
+                        onReplay={() => speakForBasicStep('b_ex1_correct')}
                     >
                         <SmallApplePicto />
                     </FeedbackCorrect>
@@ -122,6 +134,7 @@ export default function TutorialBasicScreen() {
                             bumpAttempt('b_ex2');
                             setCurrentStep('b_ex2_incorrect');
                         }}
+                        onReplay={() => speakForBasicStep('b_ex2_base')}
                     />
                 );
             case 'b_ex2_correct':
@@ -129,6 +142,7 @@ export default function TutorialBasicScreen() {
                     <FeedbackCorrect
                         message="¡Muy bien!"
                         onContinue={() => setCurrentStep('b_ex3_base')}
+                        onReplay={() => speakForBasicStep('b_ex2_correct')}
                     >
                         <SmallApplePicto />
                     </FeedbackCorrect>
@@ -138,6 +152,7 @@ export default function TutorialBasicScreen() {
                     <FeedbackIncorrect
                         showAvatar
                         onRetry={() => setCurrentStep('b_ex2_base')}
+                        onReplay={() => speakForBasicStep('b_ex2_incorrect')}
                     >
                         <Text style={styles.retryHint}>↺ puede volver a intentar</Text>
                         <View style={styles.dimRow}>
@@ -160,17 +175,22 @@ export default function TutorialBasicScreen() {
                             bumpAttempt('b_ex3');
                             setCurrentStep('b_ex3_incorrect');
                         }}
+                        onReplay={() => speakForBasicStep('b_ex3_base')}
                     />
                 );
             case 'b_ex3_correct':
                 return (
-                    <Exercise3BasicSuccess onContinue={() => setCurrentStep('b_celebration')} />
+                    <Exercise3BasicSuccess
+                        onContinue={() => setCurrentStep('b_celebration')}
+                        onReplay={() => speakForBasicStep('b_ex3_correct')}
+                    />
                 );
             case 'b_ex3_incorrect':
                 return (
                     <FeedbackIncorrect
                         showAvatar
                         onRetry={() => setCurrentStep('b_ex3_base')}
+                        onReplay={() => speakForBasicStep('b_ex3_incorrect')}
                     >
                         <Text style={styles.retryHint}>↺ volver a intentar</Text>
                         <View style={styles.dragRemind}>
@@ -192,6 +212,7 @@ export default function TutorialBasicScreen() {
                         achievements={BASIC_CELEBRATION_ACHIEVEMENTS}
                         buttonLabel="Empezar a usar la app →"
                         onContinue={finishApp}
+                        onReplay={() => speakForBasicStep('b_celebration')}
                     />
                 );
             default:
