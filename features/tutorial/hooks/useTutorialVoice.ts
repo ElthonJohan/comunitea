@@ -28,11 +28,21 @@ const BASIC_SPEECH_OPTIONS: Speech.SpeechOptions = {
     rate: 0.75,
 };
 
+type PlaybackToken = { cancelled: boolean };
+
 /** Re-export para consumidores que lean scripts desde un solo lugar */
 export { TUTORIAL_BASIC_SCRIPTS, TUTORIAL_STEP_SCRIPTS } from '../data/voice/tutorial';
 
-function speakPromise(text: string, options: Speech.SpeechOptions): Promise<void> {
+function speakPromise(
+    text: string,
+    options: Speech.SpeechOptions,
+    token?: PlaybackToken,
+): Promise<void> {
     return new Promise((resolve) => {
+        if (token?.cancelled) {
+            resolve();
+            return;
+        }
         Speech.stop();
         Speech.speak(text, {
             ...options,
@@ -56,11 +66,24 @@ function stopTutorialAudioPlayer(ref: MutableRefObject<AudioPlayer | null>) {
 async function playClipModule(
     mod: number,
     ref: MutableRefObject<AudioPlayer | null>,
+    token?: PlaybackToken,
 ): Promise<void> {
+    if (token?.cancelled) return;
     stopTutorialAudioPlayer(ref);
     const uri = await bundledModuleToPlayableUri(mod);
+    if (token?.cancelled) return;
+
+    // Detener cualquier reproductor activo previo
+    stopTutorialAudioPlayer(ref);
+
     const player = createAudioPlayer({ uri });
     ref.current = player;
+
+    if (token?.cancelled) {
+        stopTutorialAudioPlayer(ref);
+        return;
+    }
+
     try {
         await playAudioPlayerUntilDone(player, 120_000);
     } finally {
@@ -69,24 +92,33 @@ async function playClipModule(
 }
 
 export function useTutorialVoice() {
-    const { voice } = useVoice();
+    const { voice, isLoading } = useVoice();
     const tutorialAudioRef = useRef<AudioPlayer | null>(null);
+    const activeTokenRef = useRef<PlaybackToken>({ cancelled: false });
 
     const stopAll = useCallback(() => {
+        activeTokenRef.current.cancelled = true;
+        activeTokenRef.current = { cancelled: false };
         stopTutorialAudioPlayer(tutorialAudioRef);
         Speech.stop();
     }, []);
 
-    const speak = useCallback(async (text: string) => {
-        stopAll();
-        await speakPromise(text, SPEECH_OPTIONS);
-    }, [stopAll]);
+    const speak = useCallback(
+        async (text: string) => {
+            stopAll();
+            const token = activeTokenRef.current;
+            await speakPromise(text, SPEECH_OPTIONS, token);
+        },
+        [stopAll],
+    );
 
     const speakWithDelay = useCallback(
         async (text: string, delayMs: number) => {
             await new Promise((r) => setTimeout(r, delayMs));
-            stopAll();
-            await speakPromise(text, SPEECH_OPTIONS);
+            const token = activeTokenRef.current;
+            if (token.cancelled) return;
+            stopTutorialAudioPlayer(tutorialAudioRef);
+            await speakPromise(text, SPEECH_OPTIONS, token);
         },
         [stopAll],
     );
@@ -94,8 +126,10 @@ export function useTutorialVoice() {
     const speakBasicWithDelay = useCallback(
         async (text: string, delayMs = 800) => {
             await new Promise((r) => setTimeout(r, delayMs));
-            stopAll();
-            await speakPromise(text, BASIC_SPEECH_OPTIONS);
+            const token = activeTokenRef.current;
+            if (token.cancelled) return;
+            stopTutorialAudioPlayer(tutorialAudioRef);
+            await speakPromise(text, BASIC_SPEECH_OPTIONS, token);
         },
         [stopAll],
     );
@@ -103,59 +137,73 @@ export function useTutorialVoice() {
     const speakForStep = useCallback(
         async (step: TutorialStep) => {
             stopAll();
+            const token = activeTokenRef.current;
+            if (isLoading) return;
+
             const modules = getTutorialG1G2ClipModules(step, voice);
             if (modules.length > 0) {
                 try {
                     for (const mod of modules) {
-                        await playClipModule(mod, tutorialAudioRef);
+                        if (token.cancelled) break;
+                        await playClipModule(mod, tutorialAudioRef, token);
                     }
                     return;
                 } catch (err) {
                     console.warn('[Tutorial G1/G2] Falló audio grabado, usando TTS.', err);
                 }
             }
+            if (token.cancelled) return;
             const script = TUTORIAL_STEP_SCRIPTS[step as keyof typeof TUTORIAL_STEP_SCRIPTS];
             if (!script) return;
-            await speakPromise(script, SPEECH_OPTIONS);
+            await speakPromise(script, SPEECH_OPTIONS, token);
         },
-        [voice, stopAll],
+        [voice, isLoading, stopAll],
     );
 
     const speakForBasicStep = useCallback(
         async (step: TutorialStepBasic) => {
             stopAll();
+            const token = activeTokenRef.current;
+            if (isLoading) return;
+
             const modules = getTutorialG3ClipModules(step, voice);
             if (modules.length > 0) {
                 try {
                     await new Promise((r) => setTimeout(r, 800));
+                    if (token.cancelled) return;
                     for (const mod of modules) {
-                        await playClipModule(mod, tutorialAudioRef);
+                        if (token.cancelled) break;
+                        await playClipModule(mod, tutorialAudioRef, token);
                     }
                     return;
                 } catch (err) {
                     console.warn('[Tutorial G3] Falló audio grabado, usando TTS.', err);
                 }
             }
+            if (token.cancelled) return;
             const script = TUTORIAL_BASIC_SCRIPTS[step as keyof typeof TUTORIAL_BASIC_SCRIPTS];
             if (!script) return;
             await new Promise((r) => setTimeout(r, 800));
-            await speakPromise(script, BASIC_SPEECH_OPTIONS);
+            if (token.cancelled) return;
+            await speakPromise(script, BASIC_SPEECH_OPTIONS, token);
         },
-        [voice, stopAll],
+        [voice, isLoading, stopAll],
     );
 
     const playCelebrationNarration = useCallback(async () => {
         stopAll();
+        const token = activeTokenRef.current;
         const mod = getTutorialG1G2CelebrationModule(voice);
         if (mod != null) {
             try {
-                await playClipModule(mod, tutorialAudioRef);
+                await playClipModule(mod, tutorialAudioRef, token);
                 return;
             } catch (err) {
                 console.warn('[Tutorial G1/G2] Falló audio celebración, usando TTS.', err);
             }
         }
-        await speakPromise(TUTORIAL_CELEBRATION_NARRATION_INTERMEDIATE, SPEECH_OPTIONS);
+        if (token.cancelled) return;
+        await speakPromise(TUTORIAL_CELEBRATION_NARRATION_INTERMEDIATE, SPEECH_OPTIONS, token);
     }, [voice, stopAll]);
 
     return {
