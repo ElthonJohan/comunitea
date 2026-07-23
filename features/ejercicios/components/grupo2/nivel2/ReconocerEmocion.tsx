@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     greenOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: 'rgba(129, 199, 132, 0.35)',
         justifyContent: 'flex-start',
     },

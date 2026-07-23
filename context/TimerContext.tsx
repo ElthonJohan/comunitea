@@ -124,7 +124,7 @@ export function useTimer() {
 
 const styles = StyleSheet.create({
     overlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: Colors.surface,
         justifyContent: 'center',
         alignItems: 'center',

@@ -242,7 +242,7 @@ function createSubcategoriaRowStyles(T: TableroThemeTokens) {
         overflow: 'hidden',
     },
     activeOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         borderRadius: R_PICTO,
         backgroundColor: T.pictoActiveBg,
         borderWidth: 1.5,

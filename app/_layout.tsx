@@ -4,15 +4,12 @@ import { useEffect, useRef } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import {
-    PlusJakartaSans_700Bold,
-    PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
-import {
-    BeVietnamPro_400Regular,
-    BeVietnamPro_500Medium,
-    BeVietnamPro_600SemiBold,
-    BeVietnamPro_700Bold,
-} from '@expo-google-fonts/be-vietnam-pro';
+    Nunito_300Light,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+} from '@expo-google-fonts/nunito';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EditModeProvider } from '../context/EditModeContext';
 import { TimerProvider } from '../context/TimerContext';
@@ -110,12 +107,11 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
     const [fontsLoaded] = useFonts({
-        PlusJakartaSans_700Bold,
-        PlusJakartaSans_800ExtraBold,
-        BeVietnamPro_400Regular,
-        BeVietnamPro_500Medium,
-        BeVietnamPro_600SemiBold,
-        BeVietnamPro_700Bold,
+        Nunito_300Light,
+        Nunito_400Regular,
+        Nunito_600SemiBold,
+        Nunito_700Bold,
+        Nunito_800ExtraBold,
     });
 
     useEffect(() => {

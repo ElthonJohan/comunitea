@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     glowLayer: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: '#C7D7FF',
         borderRadius: 20,
     },

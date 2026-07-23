@@ -150,7 +150,7 @@ function createPersonasDrawerStyles(T: TableroThemeTokens) {
         flex: 1,
     },
     backdrop: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: '#1d1c12',
     },
     drawer: {

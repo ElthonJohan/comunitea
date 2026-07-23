@@ -1,14 +1,15 @@
 /**
- * Familias cargadas en app/_layout.tsx con expo-google-fonts.
+ * Familias cargadas en app/_layout.tsx con @expo-google-fonts/nunito.
  */
 export const Fonts = {
-  displayBold: 'PlusJakartaSans_700Bold',
-  displayExtraBold: 'PlusJakartaSans_800ExtraBold',
-  body: 'BeVietnamPro_400Regular',
-  bodyMedium: 'BeVietnamPro_500Medium',
-  bodySemiBold: 'BeVietnamPro_600SemiBold',
-  bodyBold: 'BeVietnamPro_700Bold',
+  light: 'Nunito_300Light',
+  body: 'Nunito_400Regular',
+  bodyMedium: 'Nunito_400Regular',
+  bodySemiBold: 'Nunito_600SemiBold',
+  bodyBold: 'Nunito_700Bold',
+  displayBold: 'Nunito_700Bold',
+  displayExtraBold: 'Nunito_800ExtraBold',
 } as const;
 
-/** Tamaño display-lg (3.5rem) — usar con moderación */
+/** Tamaño display-lg (3.5rem) */
 export const displayLg = 56;

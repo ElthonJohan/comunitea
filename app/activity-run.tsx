@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
 
     // Feedback overlay
     feedbackOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: '#7a9b88cc',   // Colors.success con alpha
         alignItems: 'center',
         justifyContent: 'center',
