@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Image } from 'react-native';
 import { TUTORIAL_POINTING_HAND_PNG } from '../../../../constants/tutorialHandAsset';
 import { Fonts } from '../../../../constants/Typography';
+import { Colors } from '../../../../constants/Colors';
 import { TutorialTheme } from '../tutorialTheme';
 import TutorialAvatar from '../TutorialAvatar';
 import VoiceBubble from '../VoiceBubble';
@@ -81,9 +82,9 @@ const styles = StyleSheet.create({
     },
     sectionLabel: {
         textAlign: 'center',
-        fontSize: 13,
+        fontSize: 16,
         fontFamily: Fonts.bodyBold,
-        color: 'rgba(91,75,138,0.95)',
+        color: Colors.text.primary,
         marginTop: 8,
         marginBottom: 6,
     },
@@ -158,9 +159,9 @@ const styles = StyleSheet.create({
     },
     legend: {
         textAlign: 'center',
-        fontSize: 12,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(91,75,138,0.85)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 'auto',
         paddingHorizontal: 16,
         paddingBottom: 8,

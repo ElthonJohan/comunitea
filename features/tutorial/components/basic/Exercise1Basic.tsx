@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, Image } from 'react-native';
 import { TUTORIAL_POINTING_HAND_PNG } from '../../../../constants/tutorialHandAsset';
 import { Fonts } from '../../../../constants/Typography';
+import { Colors } from '../../../../constants/Colors';
 import { TutorialTheme } from '../tutorialTheme';
 import TutorialAvatar from '../TutorialAvatar';
 import VoiceBubble from '../VoiceBubble';
@@ -80,7 +81,7 @@ export default function Exercise1Basic({ onCorrect, onReplay }: Props) {
                     </Animated.View>
                 </View>
                 <Text style={styles.hint}>
-                    solo una imagen — no hay opciones / no se puede equivocar
+                    solo una imagen — no hay opciones
                 </Text>
                 <Text style={styles.legend}>dónde tocar · cómo interactuar</Text>
             </View>
@@ -113,8 +114,8 @@ const styles = StyleSheet.create({
     },
     fingerHint: {
         position: 'absolute',
-        bottom: -18,
-        right: 32,
+        bottom: -30,
+        right: 25,
         zIndex: 2,
     },
     fingerImg: {
@@ -133,17 +134,17 @@ const styles = StyleSheet.create({
     },
     hint: {
         textAlign: 'center',
-        fontSize: 13,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(29,28,18,0.65)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         paddingHorizontal: 20,
         marginTop: 8,
     },
     legend: {
         textAlign: 'center',
-        fontSize: 12,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(91,75,138,0.85)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 10,
     },
 });

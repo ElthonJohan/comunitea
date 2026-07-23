@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Image } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { Fonts } from '../../../../constants/Typography';
 import { TutorialTheme } from '../tutorialTheme';
 import TutorialAvatar from '../TutorialAvatar';
 import VoiceBubble from '../VoiceBubble';
+import { Colors } from '../../../../constants/Colors';
+
+const appleImage = require('../../../../assets/pictogramas/Fruta 1.png');
 
 type Props = {
     onContinue: () => void;
@@ -16,10 +19,6 @@ export default function Exercise3BasicSuccess({ onContinue, onReplay }: Props) {
     const s1 = useRef(new Animated.Value(0)).current;
     const s2 = useRef(new Animated.Value(0)).current;
     const s3 = useRef(new Animated.Value(0)).current;
-    const appleX = useRef(new Animated.Value(0)).current;
-    const appleScale = useRef(new Animated.Value(1)).current;
-    const appleOpacity = useRef(new Animated.Value(1)).current;
-
     useEffect(() => {
         confettiRef.current?.start();
         Animated.stagger(180, [
@@ -27,27 +26,7 @@ export default function Exercise3BasicSuccess({ onContinue, onReplay }: Props) {
             Animated.spring(s2, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
             Animated.spring(s3, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
         ]).start();
-
-        Animated.sequence([
-            Animated.parallel([
-                Animated.timing(appleX, {
-                    toValue: 1,
-                    duration: 900,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(appleScale, {
-                    toValue: 0.2,
-                    duration: 900,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(appleOpacity, {
-                    toValue: 0.15,
-                    duration: 900,
-                    useNativeDriver: true,
-                }),
-            ]),
-        ]).start();
-    }, [s1, s2, s3, appleX, appleScale, appleOpacity]);
+    }, [s1, s2, s3]);
 
     const starStyle = (v: Animated.Value) => ({
         opacity: v,
@@ -59,11 +38,6 @@ export default function Exercise3BasicSuccess({ onContinue, onReplay }: Props) {
                 }),
             },
         ],
-    });
-
-    const mergeTranslate = appleX.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 52],
     });
 
     return (
@@ -86,23 +60,15 @@ export default function Exercise3BasicSuccess({ onContinue, onReplay }: Props) {
             <TutorialAvatar mood="happy" />
             <VoiceBubble text="¡Excelente!" onReplay={onReplay} />
             <View style={styles.mergeRow}>
-                <Animated.View
-                    style={[
-                        styles.appleWrap,
-                        {
-                            opacity: appleOpacity,
-                            transform: [{ translateX: mergeTranslate }, { scale: appleScale }],
-                        },
-                    ]}
-                >
-                    <Text style={styles.mergeEmoji}>🍎</Text>
-                </Animated.View>
+                <View style={styles.appleWrap}>
+                    <Image source={appleImage} style={styles.appleImg} />
+                </View>
                 <Text style={styles.arrowMini}>→</Text>
                 <View style={styles.mouthWrap}>
                     <Text style={styles.mergeEmoji}>👄</Text>
                 </View>
             </View>
-            <Text style={styles.caption}>la manzana &quot;entró&quot; a la boca</Text>
+            <Text style={styles.caption}>La manzana &quot;entró&quot; a la boca</Text>
             <View style={styles.spacer} />
             <TouchableOpacity style={styles.btn} onPress={onContinue} activeOpacity={0.85}>
                 <Text style={styles.btnText}>Continuar →</Text>
@@ -161,9 +127,9 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'center',
         marginTop: 16,
-        fontSize: 15,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(29,28,18,0.7)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         paddingHorizontal: 20,
     },
     spacer: {
@@ -180,5 +146,10 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 17,
         fontFamily: Fonts.bodyBold,
+    },
+    appleImg: {
+        width: 64,
+        height: 64,
+        resizeMode: 'contain',
     },
 });

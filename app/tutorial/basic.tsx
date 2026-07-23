@@ -220,8 +220,7 @@ export default function TutorialBasicScreen() {
         }
     };
 
-    const hideHeader =
-        currentStep === 'b_celebration' || currentStep === 'b_ex3_correct';
+    const hideHeader = currentStep === 'b_celebration';
 
     return (
         <TutorialScreenFrame fadeKey={currentStep} backgroundColor={bg}>

@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
-        backgroundColor: 'rgba(255,255,255,0.75)',
+        backgroundColor: TutorialTheme.correctBg,
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 14,

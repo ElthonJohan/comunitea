@@ -218,9 +218,9 @@ const styles = StyleSheet.create({
     footer: {
         marginTop: 'auto',
         textAlign: 'center',
-        fontSize: 13,
-        fontFamily: Fonts.bodyMedium,
-        color: '#5B4B8A',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginBottom: 16,
     },
 });

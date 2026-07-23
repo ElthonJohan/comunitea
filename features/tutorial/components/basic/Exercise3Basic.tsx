@@ -4,6 +4,7 @@ import { TUTORIAL_POINTING_HAND_PNG } from '../../../../constants/tutorialHandAs
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 import { Fonts } from '../../../../constants/Typography';
+import { Colors } from '../../../../constants/Colors';
 import { TutorialTheme } from '../tutorialTheme';
 import TutorialAvatar from '../TutorialAvatar';
 import VoiceBubble from '../VoiceBubble';
@@ -203,9 +204,9 @@ const styles = StyleSheet.create({
         fontSize: 52,
     },
     zoneLabel: {
-        fontSize: 14,
+        fontSize: 16,
         fontFamily: Fonts.bodyBold,
-        color: '#1d1c12',
+        color: Colors.text.primary,
         marginTop: 2,
     },
     here: {
@@ -222,9 +223,9 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     tag: {
-        fontSize: 12,
+        fontSize: 16,
         fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(91,75,138,0.9)',
+        color: Colors.text.primary,
     },
     draggingLine: {
         textAlign: 'center',
@@ -235,31 +236,31 @@ const styles = StyleSheet.create({
     },
     bocaAqui: {
         textAlign: 'center',
-        fontSize: 15,
+        fontSize: 16,
         fontFamily: Fonts.bodyBold,
-        color: TutorialTheme.correctButton,
+        color: Colors.text.primary,
         marginTop: 4,
     },
     destLine: {
         textAlign: 'center',
-        fontSize: 12,
+        fontSize: 16,
         fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(29,28,18,0.6)',
+        color: Colors.text.primary,
         marginTop: 4,
     },
     legend: {
         textAlign: 'center',
-        fontSize: 12,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(91,75,138,0.88)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 'auto',
         paddingHorizontal: 12,
     },
     legendSmall: {
         textAlign: 'center',
-        fontSize: 11,
-        fontFamily: Fonts.bodySemiBold,
-        color: 'rgba(29,28,18,0.55)',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 4,
         paddingBottom: 6,
     },

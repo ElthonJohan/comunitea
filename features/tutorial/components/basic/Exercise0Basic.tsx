@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Fonts } from '../../../../constants/Typography';
+import { Colors } from '../../../../constants/Colors';
 import { TutorialTheme } from '../tutorialTheme';
 import TutorialAvatar from '../TutorialAvatar';
 import VoiceBubble from '../VoiceBubble';
@@ -20,7 +21,7 @@ export default function Exercise0Basic({ onCorrect, onReplay }: Props) {
                     text="¡Hola! Bienvenido a ComuniTEA. Vamos a jugar. Toca la categoría de ALIMENTOS para empezar."
                     onReplay={onReplay}
                 />
-                <Text style={styles.hint}>toca la categoría alimentos</Text>
+                <Text style={styles.hint}>Toca la categoría alimentos</Text>
                 <View style={styles.pictoWrap}>
                     <TouchableOpacity
                         style={styles.picto}
@@ -50,9 +51,9 @@ const styles = StyleSheet.create({
     },
     hint: {
         textAlign: 'center',
-        fontSize: 15,
-        fontFamily: Fonts.bodyMedium,
-        color: '#4a3f6b',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 12,
         marginBottom: 8,
     },

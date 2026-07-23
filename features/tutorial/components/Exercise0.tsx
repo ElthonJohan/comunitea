@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Fonts } from '../../../constants/Typography';
+import { Colors } from '../../../constants/Colors';
 import { TutorialTheme } from './tutorialTheme';
 import TutorialAvatar from './TutorialAvatar';
 import VoiceBubble from './VoiceBubble';
@@ -52,9 +53,9 @@ const styles = StyleSheet.create({
     },
     hint: {
         textAlign: 'center',
-        fontSize: 15,
-        fontFamily: Fonts.bodyMedium,
-        color: '#4a3f6b',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
         marginTop: 12,
         marginBottom: 8,
     },
