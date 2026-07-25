@@ -5,6 +5,7 @@ import { TABLERO_LAYOUT } from '../../../constants/TableroTheme';
 import type { TableroThemeTokens } from '../../../constants/TableroTheme';
 import { Radii, Space } from '../../../constants/Theme';
 import { useTableroTheme } from '../../../hooks/useTableroTheme';
+import { Colors } from 'constants';
 
 type Props = {
     childName: string;
@@ -96,78 +97,78 @@ export default function Header({
 
 function createHeaderStyles(T: TableroThemeTokens) {
     return StyleSheet.create({
-    bar: {
-        height: HEADER_HEIGHT,
-        backgroundColor: T.headerBg,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-    },
-    left: { marginRight: 12 },
-    avatarImg: {
-        width: 42,
-        height: 42,
-        borderRadius: Radii.full,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.35)',
-    },
-    avatarPh: {
-        width: 42,
-        height: 42,
-        borderRadius: Radii.full,
-        backgroundColor: 'rgba(255,255,255,0.22)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    avatarLetter: {
-        color: T.headerText,
-        fontSize: 18,
-        fontFamily: Fonts.displayBold,
-    },
-    center: {
-        flex: 1,
-        minWidth: 0,
-    },
-    name: {
-        color: T.headerText,
-        fontSize: 15,
-        fontFamily: Fonts.bodyBold,
-    },
-    badge: {
-        marginTop: 6,
-    },
-    badgeText: {
-        color: 'rgba(255,255,255,0.92)',
-        fontSize: 12,
-        fontFamily: Fonts.bodySemiBold,
-        marginBottom: 4,
-    },
-    track: {
-        height: 6,
-        borderRadius: Radii.sm,
-        backgroundColor: T.xpTrackBg,
-        overflow: 'hidden',
-    },
-    fill: {
-        height: '100%',
-        borderRadius: Radii.sm,
-        backgroundColor: T.xpFill,
-    },
-    right: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-    },
-    rightSpacer: { width: 8 },
-    iconHit: {
-        minWidth: 44,
-        minHeight: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    iconEmoji: {
-        fontSize: 24,
-    },
-});
+        bar: {
+            height: HEADER_HEIGHT,
+            backgroundColor: T.headerBg,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+        },
+        left: { marginRight: 12 },
+        avatarImg: {
+            width: 42,
+            height: 42,
+            borderRadius: Radii.full,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.35)',
+        },
+        avatarPh: {
+            width: 42,
+            height: 42,
+            borderRadius: Radii.full,
+            backgroundColor: 'rgba(255,255,255,0.22)',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        avatarLetter: {
+            color: T.headerText,
+            fontSize: 18,
+            fontFamily: Fonts.displayBold,
+        },
+        center: {
+            flex: 1,
+            minWidth: 0,
+        },
+        name: {
+            color: T.headerText,
+            fontSize: 18,
+            fontFamily: Fonts.bodyBold,
+        },
+        badge: {
+            marginTop: 6,
+        },
+        badgeText: {
+            color: T.headerText,
+            fontSize: 14,
+            fontFamily: Fonts.bodySemiBold,
+            marginBottom: 4,
+        },
+        track: {
+            height: 6,
+            borderRadius: Radii.sm,
+            backgroundColor: T.xpTrackBg,
+            overflow: 'hidden',
+        },
+        fill: {
+            height: '100%',
+            borderRadius: Radii.sm,
+            backgroundColor: T.xpFill,
+        },
+        right: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+        },
+        rightSpacer: { width: 8 },
+        iconHit: {
+            minWidth: 44,
+            minHeight: 44,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        iconEmoji: {
+            fontSize: 24,
+        },
+    });
 }

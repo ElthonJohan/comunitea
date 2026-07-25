@@ -79,12 +79,12 @@ function createTableroScreenStyles(T: TableroThemeTokens) {
             alignItems: 'center',
         },
         backPressed: {
-            opacity: 0.85,
+            opacity: 0,
         },
         categoryTitle: {
             flex: 1,
             fontSize: 16,
-            fontFamily: Fonts.bodySemiBold,
+            fontFamily: Fonts.bodyBold,
             color: T.catButtonOnSolid,
         },
         sectionSpacer: {
@@ -453,8 +453,8 @@ export default function TableroScreen() {
                             drawerKind === 'persona'
                                 ? openAddPersonaModal
                                 : drawerKind === 'peticion'
-                                  ? () => Alert.alert('Próximamente', 'Agregar petición')
-                                  : undefined
+                                    ? () => Alert.alert('Próximamente', 'Agregar petición')
+                                    : undefined
                         }
                     />
                 ) : null}

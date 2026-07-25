@@ -51,8 +51,8 @@ function createCategoriasStyles(T: TableroThemeTokens) {
             marginTop: 4,
             marginHorizontal: 16,
             marginBottom: 8,
-            fontSize: 13,
-            fontFamily: Fonts.body,
+            fontSize: 16,
+            fontFamily: Fonts.bodySemiBold,
             color: T.textSecondary,
         },
         list: {
@@ -90,8 +90,8 @@ function createCategoriasStyles(T: TableroThemeTokens) {
         },
         cardMeta: {
             marginTop: 6,
-            fontSize: 12,
-            fontFamily: Fonts.body,
+            fontSize: 16,
+            fontFamily: Fonts.bodyBold,
             color: T.textMuted,
         },
     });

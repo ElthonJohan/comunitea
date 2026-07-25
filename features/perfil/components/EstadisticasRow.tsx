@@ -34,8 +34,8 @@ function createEstadisticasStyles(T: TableroThemeTokens) {
             color: T.ejercicioAccent,
         },
         lbl: {
-            fontSize: 12,
-            fontFamily: Fonts.bodySemiBold,
+            fontSize: 15,
+            fontFamily: Fonts.bodyBold,
             color: T.ejercicioMeta,
             marginTop: 8,
             textAlign: 'center',
