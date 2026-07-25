@@ -2,12 +2,16 @@
  * ParentalContext.tsx
  * Muestra pantalla de bloqueo cuando se supera el límite de uso diario.
  * Desbloqueo con PIN (reutiliza EditModeContext).
+ *
+ * Tracking de tiempo: únicamente AppState (foreground ↔ background).
+ * El intervalo de 30s fue eliminado para evitar duplicación de segundos.
  */
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AppState, AppStateStatus } from 'react-native';
 import { useParental } from '../lib/hooks/useParental';
 import { useEditMode } from './EditModeContext';
+import { useAuth } from './AuthContext';
 import { Colors } from '../constants/Colors';
 
 interface ParentalContextValue {
@@ -25,16 +29,26 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
         refresh,
     } = useParental();
     const { isEditMode, requestUnlock } = useEditMode();
+    const { user } = useAuth();
     const [bypass, setBypass] = useState(false);
     const sessionStartRef = useRef<number>(Date.now());
     const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
+    // Activar bypass solo si hay bloqueo activo Y el padre está en modo edición
     useEffect(() => {
         if (isBlocked && isEditMode) {
             setBypass(true);
         }
     }, [isBlocked, isEditMode]);
 
+    // Reset bypass al cambiar de usuario — evita que un bypass de otra sesión persista
+    useEffect(() => {
+        setBypass(false);
+    }, [user?.id]);
+
+    // Único mecanismo de tracking: AppState
+    // Al pasar a background, calcula elapsed y acumula.
+    // Al volver a foreground, reinicia el contador de sesión.
     useEffect(() => {
         const sub = AppState.addEventListener('change', (nextState) => {
             if (appStateRef.current === 'active' && nextState !== 'active') {
@@ -49,16 +63,6 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
         });
         return () => sub.remove();
     }, [addUsedSeconds, refresh]);
-
-    useEffect(() => {
-        if (!isBlocked || bypass) return;
-        const interval = setInterval(() => {
-            if (AppState.currentState === 'active') {
-                addUsedSeconds(30);
-            }
-        }, 30000);
-        return () => clearInterval(interval);
-    }, [isBlocked, bypass, addUsedSeconds]);
 
     const showBlock = isBlocked && !bypass;
 

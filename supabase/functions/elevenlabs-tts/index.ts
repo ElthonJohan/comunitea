@@ -1,6 +1,9 @@
 // Este archivo corre en el runtime de Deno (Supabase Edge Functions), no en Node.js.
 import { corsHeaders } from '../_shared/cors.ts'
 
+// Soluciona la marca de error "Cannot find name 'Deno'" en el editor de código
+declare const Deno: any;
+
 /** Samanta — misma voz que clips pictogramas / formador de frases */
 const VOICE_ID_FEMENINA = 'qBvury71WUJfVeT1STkG'
 
@@ -71,6 +74,7 @@ Deno.serve(async (req: Request) => {
     })
   }
 })
+
 /* To invoke locally:
 
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)

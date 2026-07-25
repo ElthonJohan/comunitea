@@ -5,6 +5,7 @@ import React, {
     useEffect,
     useCallback,
     useRef,
+    useMemo,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
@@ -106,7 +107,7 @@ function mapProgressRow(row: Record<string, unknown>): ChildProgress {
     };
 }
 
-/** Si cambió el día calendario, las frases “de hoy” en BD ya no aplican hasta nueva actividad. */
+/** Si cambió el día calendario, las frases "de hoy" en BD ya no aplican hasta nueva actividad. */
 function normalizeProgressCalendar(pr: ChildProgress): ChildProgress {
     const today = todayLocal();
     if (pr.last_active_date !== null && pr.last_active_date !== today) {
@@ -149,6 +150,8 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
     childProfileRef.current = childProfile;
     const childProgressRef = useRef(childProgress);
     childProgressRef.current = childProgress;
+    const userRef = useRef(user);
+    userRef.current = user;
 
     useEffect(() => {
         AsyncStorage.getItem(STORAGE_KEYS.ACTIVE_ENVIRONMENT).then((val) => {
@@ -158,12 +161,12 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
         });
     }, []);
 
-    const setEnvironment = async (env: ActiveEnvironment) => {
+    const setEnvironment = useCallback(async (env: ActiveEnvironment) => {
         setActiveEnvironmentState(env);
         await AsyncStorage.setItem(STORAGE_KEYS.ACTIVE_ENVIRONMENT, env);
-    };
+    }, []);
 
-    const loadOrCreateProgress = async (childProfileId: string) => {
+    const loadOrCreateProgress = useCallback(async (childProfileId: string) => {
         const { data: row, error } = await supabase
             .from('child_progress')
             .select('*')
@@ -192,9 +195,9 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
         }
 
         setChildProgress(normalizeProgressCalendar(mapProgressRow(row as Record<string, unknown>)));
-    };
+    }, []);
 
-    const loadChildProfile = async (userId: string) => {
+    const loadChildProfile = useCallback(async (userId: string) => {
         try {
             const { data, error } = await supabase
                 .from('child_profiles')
@@ -230,39 +233,43 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
         } finally {
             setIsLoadingChild(false);
         }
-    };
+    }, [loadOrCreateProgress]);
 
-    const refreshChildProfile = async () => {
-        if (user) {
+    const refreshChildProfile = useCallback(async () => {
+        const u = userRef.current;
+        if (u) {
             setIsLoadingChild(true);
-            await loadChildProfile(user.id);
+            await loadChildProfile(u.id);
         }
-    };
+    }, [loadChildProfile]);
 
     useEffect(() => {
-        if (user) {
+        const u = userRef.current;
+        if (u) {
             setIsLoadingChild(true);
-            void loadChildProfile(user.id);
+            void loadChildProfile(u.id);
         } else {
             setChildProfile(null);
             setChildProgress(null);
             setIsLoadingChild(false);
         }
-    }, [user?.id]);
+    }, [user?.id, loadChildProfile]);
 
-    const saveChildProfile = async (data: ChildProfileInput) => {
-        if (!user) throw new Error('No hay sesión');
+    const saveChildProfile = useCallback(async (data: ChildProfileInput) => {
+        const u = userRef.current;
+        if (!u) throw new Error('No hay sesión');
+        const cp = childProfileRef.current;
         const payload = {
             ...data,
-            user_id: user.id,
+            user_id: u.id,
             preferred_activities: data.preferred_activities ?? [],
             important_people: data.important_people ?? [],
         };
-        if (childProfile?.id) {
+        if (cp?.id) {
             const { data: updated, error } = await supabase
                 .from('child_profiles')
                 .update(payload)
-                .eq('id', childProfile.id)
+                .eq('id', cp.id)
                 .select()
                 .single();
             if (error) throw error;
@@ -290,7 +297,7 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
                 await loadOrCreateProgress(row.id);
             }
         }
-    };
+    }, [loadOrCreateProgress]);
 
     const recordSentenceSpoken = useCallback(async () => {
         const cp = childProfileRef.current;
@@ -461,19 +468,31 @@ export function ChildProfileProvider({ children }: { children: React.ReactNode }
         return () => setExerciseGamificationListener(null);
     }, [applyExerciseWrongAttempt, applyExerciseCompleted]);
 
+    const value = useMemo<ChildProfileContextType>(
+        () => ({
+            childProfile,
+            childProgress,
+            isLoadingChild,
+            activeEnvironment,
+            setEnvironment,
+            saveChildProfile,
+            refreshChildProfile,
+            recordSentenceSpoken,
+        }),
+        [
+            childProfile,
+            childProgress,
+            isLoadingChild,
+            activeEnvironment,
+            setEnvironment,
+            saveChildProfile,
+            refreshChildProfile,
+            recordSentenceSpoken,
+        ],
+    );
+
     return (
-        <ChildProfileContext.Provider
-            value={{
-                childProfile,
-                childProgress,
-                isLoadingChild,
-                activeEnvironment,
-                setEnvironment,
-                saveChildProfile,
-                refreshChildProfile,
-                recordSentenceSpoken,
-            }}
-        >
+        <ChildProfileContext.Provider value={value}>
             {children}
         </ChildProfileContext.Provider>
     );

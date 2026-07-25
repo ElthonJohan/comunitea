@@ -9,10 +9,18 @@ import * as FileSystem from 'expo-file-system/legacy';
 import type { VoiceProfile } from '../constants/AudioAssets';
 import { normalizeFileUriForAudio, playAudioPlayerUntilDone } from './bundledAudioPlayback';
 
-/** Samanta — formador de frases (femenina) */
-export const ELEVENLABS_VOICE_FRASE_FEMENINA = 'qBvury71WUJfVeT1STkG';
-/** Luis — formador de frases (masculina) */
-export const ELEVENLABS_VOICE_FRASE_MASCULINA = 'WEXRePkZGpmcFLvCOaB1';
+// /** Samanta — formador de frases (femenina) */
+// export const ELEVENLABS_VOICE_FRASE_FEMENINA = 'qBvury71WUJfVeT1STkG';
+// /** Luis — formador de frases (masculina) */
+// export const ELEVENLABS_VOICE_FRASE_MASCULINA = 'WEXRePkZGpmcFLvCOaB1';
+
+
+// Voces por defecto permitidas en el plan gratuito de ElevenLabs:
+// Femenina (Rachel - muy natural en español): '21m00Tcm4TlvDq8ikWAM'
+// Masculina (Adam): 'pNInz6obpgDQGcFmaJgB'
+
+export const ELEVENLABS_VOICE_FRASE_FEMENINA = '21m00Tcm4TlvDq8ikWAM';
+export const ELEVENLABS_VOICE_FRASE_MASCULINA = 'pNInz6obpgDQGcFmaJgB';
 
 let phrasePlayer: AudioPlayer | null = null;
 
