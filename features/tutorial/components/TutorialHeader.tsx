@@ -3,14 +3,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Fonts } from '../../../constants/Typography';
 import { TutorialTheme } from './tutorialTheme';
+import { Colors } from '../../../constants/Colors';
 
 type Props = {
     starsFilled: number;
-    /** Por defecto 3; el ejercicio 1 básico usa 2. */
-    starSlots?: 2 | 3;
+    starSlots?: number;
 };
 
-export default function TutorialHeader({ starsFilled, starSlots = 3 }: Props) {
+export default function TutorialHeader({ starsFilled, starSlots = 4 }: Props) {
     const slots = starSlots;
     return (
         <View style={styles.bar}>
@@ -23,7 +23,7 @@ export default function TutorialHeader({ starsFilled, starSlots = 3 }: Props) {
                             key={i}
                             name={i < starsFilled ? 'star' : 'star-outline'}
                             size={22}
-                            color={i < starsFilled ? TutorialTheme.celebrationGold : 'rgba(255,255,255,0.45)'}
+                            color={i < starsFilled ? TutorialTheme.celebrationGold : 'rgba(0, 0, 0, 0.45)'}
                         />
                     ))}
                 </View>
@@ -39,24 +39,23 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        backgroundColor: TutorialTheme.baseHeader,
     },
     brand: {
-        fontSize: 18,
+        fontSize: 28,
         fontFamily: Fonts.displayExtraBold,
-        color: '#fff',
+        color: Colors.onPrimary,
     },
     brandAccent: {
-        color: TutorialTheme.celebrationGold,
+        color: Colors.primary,
     },
     right: {
         alignItems: 'flex-end',
         gap: 4,
     },
     level: {
-        fontSize: 12,
+        fontSize: 16,
         fontFamily: Fonts.bodyBold,
-        color: 'rgba(255,255,255,0.9)',
+        color: Colors.text.primary,
     },
     stars: {
         flexDirection: 'row',

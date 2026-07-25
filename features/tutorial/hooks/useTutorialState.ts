@@ -41,22 +41,23 @@ export function useTutorialState() {
         switch (currentStep) {
             case 'ex0_base':
             case 'ex0_incorrect':
+                return 0;
             case 'ex0_correct':
             case 'ex1_base':
             case 'ex1_incorrect':
-                return 0;
+                return 1;
             case 'ex1_correct':
             case 'ex2_base':
             case 'ex2_incorrect':
-                return 1;
+                return 2;
             case 'ex2_correct':
             case 'ex3_step1':
             case 'ex3_step2':
             case 'ex3_incorrect':
-                return 2;
+                return 3;
             case 'ex3_complete':
             case 'celebration':
-                return 3;
+                return 4;
             default:
                 return 0;
         }

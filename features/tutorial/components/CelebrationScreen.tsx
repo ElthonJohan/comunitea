@@ -5,6 +5,7 @@ import { Fonts } from '../../../constants/Typography';
 import { TutorialTheme } from './tutorialTheme';
 import TutorialAvatar from './TutorialAvatar';
 import VoiceBubble from './VoiceBubble';
+import { Colors } from 'constants';
 
 const DEFAULT_ACHIEVEMENTS = [
     'Tocar para pedir algo',
@@ -140,14 +141,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     brand: {
-        fontSize: 20,
+        fontSize: 28,
         fontFamily: Fonts.displayExtraBold,
-        color: '#5B4B8A',
+        color: Colors.onPrimary,
         textAlign: 'center',
         marginBottom: 8,
     },
     brandAccent: {
-        color: TutorialTheme.celebrationGold,
+        color: Colors.primary,
     },
     title: {
         fontSize: 34,
@@ -165,6 +166,11 @@ const styles = StyleSheet.create({
     },
     goldStar: {
         fontSize: 42,
+    },
+    subtitle: {
+        fontSize: 16,
+        fontFamily: Fonts.bodySemiBold,
+        color: Colors.text.primary,
     },
     list: {
         marginTop: 20,
