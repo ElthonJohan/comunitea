@@ -50,43 +50,43 @@ function decodeBase64(base64: string): Uint8Array {
 }
 
 const VOCAB_LABELS: Record<VocabLevel, string> = {
-    BASICO:     'Básico',
+    BASICO: 'Básico',
     INTERMEDIO: 'Intermedio',
-    AVANZADO:   'Avanzado',
+    AVANZADO: 'Avanzado',
 };
 
 interface OnboardingForm {
-    consentAccepted:      boolean;
-    role:                 AdultRole | null;
-    childName:            string;
-    childAvatarUri:       string | null;
-    gender:               Gender | null;
-    communicationLevel:   CommunicationLevel | null;
-    diagnosis:            Diagnosis | null;
-    environments:         string[];
-    soundSensitive:       boolean;
-    preferredActivities:  string[];
-    importantPeople:      string[];
+    consentAccepted: boolean;
+    role: AdultRole | null;
+    childName: string;
+    childAvatarUri: string | null;
+    gender: Gender | null;
+    communicationLevel: CommunicationLevel | null;
+    diagnosis: Diagnosis | null;
+    environments: string[];
+    soundSensitive: boolean;
+    preferredActivities: string[];
+    importantPeople: string[];
 }
 
 const ROLES: { id: AdultRole; label: string; emoji: string }[] = [
-    { id: 'padre_madre', label: 'Padre / Madre',  emoji: '👨‍👩‍👧' },
-    { id: 'terapeuta',   label: 'Terapeuta',      emoji: '🩺'     },
-    { id: 'psicologo',   label: 'Psicólogo/a',    emoji: '🧠'     },
-    { id: 'docente',     label: 'Docente',         emoji: '📚'     },
+    { id: 'padre_madre', label: 'Padre / Madre', emoji: '👨‍👩‍👧' },
+    { id: 'terapeuta', label: 'Terapeuta', emoji: '🩺' },
+    { id: 'psicologo', label: 'Psicólogo/a', emoji: '🧠' },
+    { id: 'docente', label: 'Docente', emoji: '📚' },
 ];
 
 const COMM_OPTIONS: { id: CommunicationLevel; label: string; sublabel: string; emoji: string }[] = [
-    { id: 'sin_lenguaje',     label: 'Todavía no usa palabras',   sublabel: 'Señas, miradas, vocalizaciones',  emoji: '🔇' },
-    { id: 'palabras_aisladas', label: 'Palabras sueltas',         sublabel: 'Mamá, agua, más…',                emoji: '💬' },
-    { id: 'frases_simples',   label: 'Frases cortas',             sublabel: 'Quiero agua, no quiero…',         emoji: '🗣️' },
-    { id: 'frases_complejas', label: 'Frases más largas',         sublabel: '4 o más palabras',                emoji: '📢' },
+    { id: 'sin_lenguaje', label: 'Todavía no usa palabras', sublabel: 'Señas, miradas, vocalizaciones', emoji: '🔇' },
+    { id: 'palabras_aisladas', label: 'Palabras sueltas', sublabel: 'Mamá, agua, más…', emoji: '💬' },
+    { id: 'frases_simples', label: 'Frases cortas', sublabel: 'Quiero agua, no quiero…', emoji: '🗣️' },
+    { id: 'frases_complejas', label: 'Frases más largas', sublabel: '4 o más palabras', emoji: '📢' },
 ];
 
 const GENDERS: { id: Gender; label: string }[] = [
-    { id: 'masculino',        label: 'Masculino'          },
-    { id: 'femenino',         label: 'Femenino'           },
-    { id: 'otro',             label: 'Otro'               },
+    { id: 'masculino', label: 'Masculino' },
+    { id: 'femenino', label: 'Femenino' },
+    { id: 'otro', label: 'Otro' },
     { id: 'prefiero_no_decir', label: 'Prefiero no decir' },
 ];
 
@@ -118,39 +118,39 @@ const DIAGNOSES: { id: Diagnosis; label: string; sublabel: string; emoji: string
 ];
 
 const ENVIRONMENTS: { id: string; label: string; emoji: string }[] = [
-    { id: 'hogar',   label: 'Hogar',   emoji: '🏠' },
+    { id: 'hogar', label: 'Hogar', emoji: '🏠' },
     { id: 'escuela', label: 'Escuela', emoji: '🏫' },
     { id: 'terapia', label: 'Terapia', emoji: '🏥' },
-    { id: 'otro',    label: 'Otro',    emoji: '🌳' },
+    { id: 'otro', label: 'Otro', emoji: '🌳' },
 ];
 
-const TOTAL_STEPS    = 9;
+const TOTAL_STEPS = 9;
 const MANDATORY_UPTO = 4; // pasos 0, 1, 2, 3 son obligatorios
 
 export default function OnboardingScreen() {
-    const [step, setStep]             = useState(0);
-    const [saving, setSaving]         = useState(false);
+    const [step, setStep] = useState(0);
+    const [saving, setSaving] = useState(false);
     const [pickingImage, setPickingImage] = useState(false);
-    const [form, setForm]             = useState<OnboardingForm>({
-        consentAccepted:     false,
-        role:                null,
-        childName:           '',
-        childAvatarUri:      null,
-        gender:              null,
-        communicationLevel:  null,
-        diagnosis:           null,
-        environments:        [],
-        soundSensitive:      false,
+    const [form, setForm] = useState<OnboardingForm>({
+        consentAccepted: false,
+        role: null,
+        childName: '',
+        childAvatarUri: null,
+        gender: null,
+        communicationLevel: null,
+        diagnosis: null,
+        environments: [],
+        soundSensitive: false,
         preferredActivities: [],
-        importantPeople:     [],
+        importantPeople: [],
     });
     const [newPersonName, setNewPersonName] = useState('');
     const [newPersonEmoji, setNewPersonEmoji] = useState('👤');
     const [newActivityName, setNewActivityName] = useState('');
 
-    const router             = useRouter();
+    const router = useRouter();
     const { user, updateLevel, profile } = useAuth();
-    const { saveChildProfile }  = useChildProfile();
+    const { saveChildProfile } = useChildProfile();
 
     // B4: Bloquear re-entrada si el onboarding ya fue completado
     React.useEffect(() => {
@@ -163,7 +163,7 @@ export default function OnboardingScreen() {
     }, [router, profile?.level]);
 
     const isOptionalStep = step >= MANDATORY_UPTO;
-    const isLastStep     = step === TOTAL_STEPS - 1;
+    const isLastStep = step === TOTAL_STEPS - 1;
 
     const canAdvance = (() => {
         if (step === 0) return form.consentAccepted;
@@ -175,7 +175,7 @@ export default function OnboardingScreen() {
 
     // B3: Etiquetas adaptadas al rol del adulto
     const isClinical = form.role === 'terapeuta' || form.role === 'psicologo' || form.role === 'docente';
-    const commLevelTitle    = isClinical ? '¿Cuál es el perfil verbal?' : '¿Cómo se comunica ahora?';
+    const commLevelTitle = isClinical ? '¿Cuál es el perfil verbal?' : '¿Cómo se comunica ahora?';
     const commLevelSubtitle = isClinical
         ? 'Define el nivel de vocabulario AAC inicial'
         : 'Esto define el vocabulario inicial que verás en la app';
@@ -206,7 +206,7 @@ export default function OnboardingScreen() {
     const uploadAvatar = async (localUri: string): Promise<string | null> => {
         if (!user) return null;
         try {
-            const base64   = await FileSystem.readAsStringAsync(localUri, { encoding: 'base64' });
+            const base64 = await FileSystem.readAsStringAsync(localUri, { encoding: 'base64' });
             const filePath = `${user.id}/child_${Date.now()}.jpg`;
             const { error } = await supabase.storage
                 .from('avatars')
@@ -230,16 +230,16 @@ export default function OnboardingScreen() {
             }
 
             await saveChildProfile({
-                name:                 form.childName.trim(),
-                avatar_url:           avatarUrl,
-                birth_date:           null,
-                gender:               form.gender,
-                communication_level:  form.communicationLevel,
-                diagnosis:            form.diagnosis,
-                environments:         form.environments,
+                name: form.childName.trim(),
+                avatar_url: avatarUrl,
+                birth_date: null,
+                gender: form.gender,
+                communication_level: form.communicationLevel,
+                diagnosis: form.diagnosis,
+                environments: form.environments,
                 preferred_activities: form.preferredActivities,
-                important_people:     form.importantPeople,
-                sound_sensitive:      form.soundSensitive,
+                important_people: form.importantPeople,
+                sound_sensitive: form.soundSensitive,
                 onboarding_completed: true,
             });
 
@@ -298,15 +298,13 @@ export default function OnboardingScreen() {
                                 styles.dot,
                                 i < MANDATORY_UPTO ? styles.dotMandatory : styles.dotOptional,
                                 i === step && styles.dotActive,
-                                i < step  && styles.dotDone,
+                                i < step && styles.dotDone,
                             ]} />
                         </React.Fragment>
                     ))}
                 </View>
                 <Text style={styles.progressLabel}>
-                    {isOptionalStep
-                        ? 'Personalización (opcional)'
-                        : `Paso ${step + 1} de ${MANDATORY_UPTO}`}
+                    {`Paso ${step + 1} de ${TOTAL_STEPS} · ${isOptionalStep ? 'Personalización (opcional)' : 'Obligatorio'}`}
                 </Text>
             </View>
 
@@ -358,7 +356,7 @@ export default function OnboardingScreen() {
                     {step === 1 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Cuál es tu rol?</Text>
-                            <Text style={styles.stepSubtitle}>Esto nos ayuda a personalizar la experiencia</Text>
+                            <Text style={styles.stepSubtitle2}>Esto nos ayuda a personalizar la experiencia</Text>
                             {ROLES.map(({ id, label, emoji }) => (
                                 <TouchableOpacity
                                     key={id}
@@ -380,7 +378,7 @@ export default function OnboardingScreen() {
                     {step === 2 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Sobre quién es esta app?</Text>
-                            <Text style={styles.stepSubtitle}>Cuéntanos sobre el niño o niña</Text>
+                            <Text style={styles.stepSubtitle2}>Cuéntanos sobre el niño o niña</Text>
 
                             <TouchableOpacity style={styles.avatarButton} onPress={handlePickPhoto} disabled={pickingImage}>
                                 {form.childAvatarUri ? (
@@ -428,7 +426,7 @@ export default function OnboardingScreen() {
                     {step === 3 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>{commLevelTitle}</Text>
-                            <Text style={styles.stepSubtitle}>{commLevelSubtitle}</Text>
+                            <Text style={styles.stepSubtitle2}>{commLevelSubtitle}</Text>
                             {COMM_OPTIONS.map(({ id, label, sublabel, emoji }) => (
                                 <TouchableOpacity
                                     key={id}
@@ -460,7 +458,7 @@ export default function OnboardingScreen() {
                     {step === 4 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Nivel de diagnóstico TEA?</Text>
-                            <Text style={styles.stepSubtitle}>
+                            <Text style={styles.stepSubtitle2}>
                                 Usamos descripciones funcionales para ayudarte a elegir. Podés omitir este paso.
                             </Text>
                             {DIAGNOSES.map(({ id, label, sublabel, emoji }) => (
@@ -487,7 +485,7 @@ export default function OnboardingScreen() {
                     {step === 5 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Dónde se usará la app?</Text>
-                            <Text style={styles.stepSubtitle}>Podés seleccionar varios entornos</Text>
+                            <Text style={styles.stepSubtitle2}>Podés seleccionar varios entornos</Text>
                             <View style={styles.envGrid}>
                                 {ENVIRONMENTS.map(({ id, label, emoji }) => {
                                     const selected = form.environments.includes(id);
@@ -499,9 +497,12 @@ export default function OnboardingScreen() {
                                             activeOpacity={0.7}
                                         >
                                             <Text style={styles.envEmoji}>{emoji}</Text>
-                                            <Text style={[styles.envLabel, selected && styles.envLabelSelected]}>
-                                                {label}
-                                            </Text>
+                                            <View style={styles.envLabelRow}>
+                                                <Text style={[styles.envLabel, selected && styles.envLabelSelected]}>
+                                                    {label}
+                                                </Text>
+                                                {selected && <Text style={styles.checkmark}>✓</Text>}
+                                            </View>
                                         </TouchableOpacity>
                                     );
                                 })}
@@ -513,7 +514,7 @@ export default function OnboardingScreen() {
                     {step === 6 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Sensibilidad sensorial?</Text>
-                            <Text style={styles.stepSubtitle}>
+                            <Text style={styles.stepSubtitle2}>
                                 Si el niño/a es sensible a sonidos fuertes o estímulos intensos,
                                 activaremos un modo más tranquilo con volumen reducido y sin celebraciones con música.
                             </Text>
@@ -552,8 +553,8 @@ export default function OnboardingScreen() {
                     {step === 7 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>¿Qué le gusta hacer?</Text>
-                            <Text style={styles.stepSubtitle}>
-                                Elegí opciones y/o escribí actividades a medida. Aparecerán como pictogramas en «Le gusta».
+                            <Text style={styles.stepSubtitle2}>
+                                Elige opciones y/o escribe actividades a medida. Aparecerán como pictogramas en «Le gusta».
                             </Text>
                             <View style={styles.activityGrid}>
                                 {PREFERRED_ACTIVITIES.map(({ id, label, emoji }) => {
@@ -636,7 +637,7 @@ export default function OnboardingScreen() {
                     {step === 8 && (
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Personas importantes</Text>
-                            <Text style={styles.stepSubtitle}>
+                            <Text style={styles.stepSubtitle2}>
                                 Emoji y nombre (mamá, papá, maestra…). Aparecerán en el tablero; si configurás al menos una, reemplazan a los ejemplos fijos.
                             </Text>
                             <View style={styles.personInputRow}>
@@ -727,7 +728,7 @@ export default function OnboardingScreen() {
                 <View style={styles.navRow}>
                     {step > 0 && (
                         <TouchableOpacity
-                            style={styles.backButton}
+                            style={[styles.backButton, saving && styles.disabledButton]}
                             onPress={() => setStep(s => s - 1)}
                             disabled={saving}
                         >
@@ -735,11 +736,8 @@ export default function OnboardingScreen() {
                         </TouchableOpacity>
                     )}
                     <PrimaryGradientButton
-                        style={[
-                            styles.nextButton,
-                            (step === 0 || step === 1) && styles.nextButtonFull,
-                        ]}
-                        label={isLastStep ? '¡Empecemos! 🐧' : 'Siguiente →'}
+                        style={styles.nextButton}
+                        label={isLastStep ? '¡Empecemos!' : 'Siguiente →'}
                         onPress={handleNext}
                         disabled={!canAdvance || saving}
                         loading={saving}
@@ -791,11 +789,10 @@ const styles = StyleSheet.create({
         opacity: 0.85,
     },
     progressSpacer: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: Colors.surfaceContainerHigh,
-        marginHorizontal: 4,
+        width: 2,
+        height: 12,
+        backgroundColor: Colors.text.disabled,
+        marginHorizontal: 6,
     },
     progressLabel: {
         fontSize: 12,
@@ -823,6 +820,13 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         marginBottom: Space.md,
     },
+    stepSubtitle2: {
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
+        color: Colors.text.primary,
+        lineHeight: 22,
+        marginBottom: Space.md,
+    },
     optionCard: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -840,22 +844,22 @@ const styles = StyleSheet.create({
     },
     optionLabel: {
         fontSize: 16,
-        fontFamily: Fonts.bodySemiBold,
+        fontFamily: Fonts.bodyBold,
         color: Colors.text.primary,
     },
     optionLabelSelected: {
         color: Colors.text.primary,
     },
     optionSublabel: {
-        fontSize: 12,
-        fontFamily: Fonts.body,
+        fontSize: 14,
+        fontFamily: Fonts.bodySemiBold,
         color: Colors.text.secondary,
         marginTop: 2,
     },
     checkmark: {
         fontSize: 18,
+        fontFamily: Fonts.bodyBold,
         color: Colors.primary,
-        fontWeight: '700',
     },
     vocabBadge: {
         backgroundColor: Colors.primaryLight,
@@ -865,8 +869,8 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     vocabBadgeText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
         color: Colors.text.primary,
     },
     avatarButton: {
@@ -896,16 +900,17 @@ const styles = StyleSheet.create({
     },
     avatarPlaceholderText: {
         fontSize: 10,
+        fontFamily: Fonts.body,
         color: Colors.text.secondary,
         marginTop: 2,
     },
     fieldLabel: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontFamily: Fonts.bodyBold,
         color: Colors.text.primary,
     },
     optionalTag: {
-        fontWeight: '400',
+        fontFamily: Fonts.body,
         color: Colors.text.secondary,
     },
     textInput: {
@@ -932,13 +937,13 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surfaceContainerHigh,
     },
     pillText: {
-        fontSize: 13,
+        fontSize: 16,
+        fontFamily: Fonts.bodyMedium,
         color: Colors.text.secondary,
-        fontWeight: '500',
     },
     pillTextSelected: {
         color: Colors.text.primary,
-        fontWeight: '600',
+        fontFamily: Fonts.bodySemiBold,
     },
     envGrid: {
         flexDirection: 'row',
@@ -957,16 +962,22 @@ const styles = StyleSheet.create({
     envCardSelected: {
         backgroundColor: Colors.surfaceContainerHigh,
     },
+    envLabelRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
     envEmoji: {
         fontSize: 32,
     },
     envLabel: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontFamily: Fonts.bodySemiBold,
         color: Colors.text.secondary,
     },
     envLabelSelected: {
         color: Colors.text.primary,
+        fontFamily: Fonts.bodySemiBold,
     },
     navContainer: {
         padding: Space.lg,
@@ -979,31 +990,33 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
     },
     skipButtonText: {
-        fontSize: 13,
+        fontSize: 16,
+        fontFamily: Fonts.bodySemiBold,
         color: Colors.text.secondary,
         textDecorationLine: 'underline',
     },
     navRow: {
         flexDirection: 'row',
         gap: 12,
+        alignItems: 'center',
     },
     backButton: {
         flex: 1,
-        backgroundColor: Colors.surfaceContainerHighest,
-        borderRadius: Radii.md,
-        padding: Space.md,
+        backgroundColor: Colors.surfaceContainerButtons,
+        borderRadius: Radii.xl,
+        minHeight: 56,
         alignItems: 'center',
         justifyContent: 'center',
     },
     backButtonText: {
         fontSize: 16,
         fontFamily: Fonts.bodySemiBold,
-        color: Colors.primary,
+        color: Colors.text.primary,
+    },
+    disabledButton: {
+        opacity: 0.5,
     },
     nextButton: {
-        flex: 2,
-    },
-    nextButtonFull: {
         flex: 1,
     },
     // ── Consentimiento ──
@@ -1015,12 +1028,13 @@ const styles = StyleSheet.create({
     },
     consentSectionTitle: {
         fontSize: 13,
-        fontWeight: '700',
+        fontFamily: Fonts.bodyBold,
         color: Colors.text.primary,
         marginBottom: 4,
     },
     consentItem: {
         fontSize: 13,
+        fontFamily: Fonts.body,
         color: Colors.text.secondary,
         lineHeight: 19,
     },
@@ -1054,14 +1068,14 @@ const styles = StyleSheet.create({
     checkboxTick: {
         color: '#FFF',
         fontSize: 14,
-        fontWeight: '700',
+        fontFamily: Fonts.bodyBold,
     },
     consentCheckLabel: {
         fontSize: 14,
+        fontFamily: Fonts.bodyMedium,
         color: Colors.text.primary,
         lineHeight: 20,
         flex: 1,
-        fontWeight: '500',
     },
     // B1 — Actividades preferidas
     activityGrid: {
@@ -1086,13 +1100,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     activityLabel: {
-        fontSize: 13,
+        fontSize: 14,
+        fontFamily: Fonts.bodyMedium,
         color: Colors.text.secondary,
-        fontWeight: '500',
     },
     activityLabelSelected: {
         color: Colors.text.primary,
-        fontWeight: '700',
+        fontFamily: Fonts.bodyBold,
     },
     // B2 — Personas importantes
     personInputRow: {
@@ -1109,6 +1123,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.border,
         paddingHorizontal: 6,
         fontSize: 26,
+        fontFamily: Fonts.body,
         textAlign: 'center',
         color: Colors.text.primary,
         backgroundColor: Colors.surfaceContainerLowest,
@@ -1121,6 +1136,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.border,
         paddingHorizontal: 14,
         fontSize: 15,
+        fontFamily: Fonts.body,
         color: Colors.text.primary,
         backgroundColor: Colors.surfaceContainerLowest,
     },
@@ -1134,6 +1150,7 @@ const styles = StyleSheet.create({
     },
     personAddBtnText: {
         fontSize: 26,
+        fontFamily: Fonts.bodyBold,
         color: Colors.white,
         lineHeight: 30,
     },
@@ -1149,13 +1166,14 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surfaceContainerHigh,
     },
     personChipText: {
-        fontSize: 13,
+        fontSize: 16,
+        fontFamily: Fonts.bodySemiBold,
         color: Colors.text.primary,
-        fontWeight: '600',
     },
     personHint: {
         marginTop: 16,
-        fontSize: 13,
+        fontSize: 16,
+        fontFamily: Fonts.bodySemiBold,
         color: Colors.text.secondary,
         textAlign: 'center',
         lineHeight: 18,

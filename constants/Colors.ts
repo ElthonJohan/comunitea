@@ -13,7 +13,9 @@ const baseSurface = {
   /** Hover / feedback suave en listas y tarjetas */
   surfaceContainerHigh: '#ebe8da',
   surfaceContainerHighest: '#e6e3d2',
-  
+  surfaceContainerButtons: 'rgba(182, 182, 182, 1)',
+
+
   /** Alias retrocompat: fondo de pantalla = surface base */
   background: '#f8f4e3',
   /** Superficie intermedia (antes surface2) */
@@ -28,7 +30,7 @@ const baseSurface = {
   success: '#5a7a62',
   warning: '#c9a227',
   white: '#ffffff',
-  
+
   text: {
     primary: '#1d1c12',
     secondary: '#4a473c',
@@ -118,25 +120,25 @@ export type AppColorPalette = (typeof Palettes)[ThemeColor];
 /** Color por id de categoría/pictograma (requiere la paleta activa) */
 /** Objeto mutable sincronizado con la paleta activa (ver `syncStaticColors`) */
 export const Colors = {
-    ...Palettes.sage,
-    text: { ...Palettes.sage.text, logo: { ...Palettes.sage.text.logo } },
-    header: { ...Palettes.sage.header },
-    category: { ...Palettes.sage.category },
+  ...Palettes.sage,
+  text: { ...Palettes.sage.text, logo: { ...Palettes.sage.text.logo } },
+  header: { ...Palettes.sage.header },
+  category: { ...Palettes.sage.category },
 } as unknown as AppColorPalette;
 
 export function syncStaticColors(theme: ThemeColor) {
-    const s = Palettes[theme];
-    (Object.keys(s) as (keyof AppColorPalette)[]).forEach((k) => {
-        if (k === 'text' || k === 'header' || k === 'category') return;
-        (Colors as Record<string, unknown>)[k as string] = s[k] as unknown;
-    });
-    Object.assign(Colors.text.logo, s.text.logo);
-    Object.assign(Colors.text, { ...s.text, logo: Colors.text.logo });
-    Object.assign(Colors.header, s.header);
-    Object.assign(Colors.category, s.category);
+  const s = Palettes[theme];
+  (Object.keys(s) as (keyof AppColorPalette)[]).forEach((k) => {
+    if (k === 'text' || k === 'header' || k === 'category') return;
+    (Colors as Record<string, unknown>)[k as string] = s[k] as unknown;
+  });
+  Object.assign(Colors.text.logo, s.text.logo);
+  Object.assign(Colors.text, { ...s.text, logo: Colors.text.logo });
+  Object.assign(Colors.header, s.header);
+  Object.assign(Colors.category, s.category);
 }
 
 export function getCategoryColor(categoryId: string, palette: AppColorPalette = Colors): string {
-    const key = categoryId as keyof typeof palette.category;
-    return palette.category[key] ?? palette.category.default;
+  const key = categoryId as keyof typeof palette.category;
+  return palette.category[key] ?? palette.category.default;
 }

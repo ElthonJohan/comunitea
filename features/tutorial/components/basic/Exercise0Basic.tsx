@@ -89,6 +89,6 @@ const styles = StyleSheet.create({
     },
     finger: {
         bottom: '28%',
-        right: '22%',
+        right: '30%',
     },
 });

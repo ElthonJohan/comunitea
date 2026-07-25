@@ -225,8 +225,8 @@ const styles = StyleSheet.create({
         color: Colors.primary,
     },
     logoSubtitle: {
-        fontSize: 14,
-        fontFamily: Fonts.bodyMedium,
+        fontSize: 16,
+        fontFamily: Fonts.displayBold,
         color: Colors.text.secondary,
         marginTop: 6,
         textAlign: 'center',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
         ...ShadowAmbientLight,
     },
     footer: { marginTop: 20, alignItems: 'center', gap: 6 },
-    linkText: { fontSize: 14, fontFamily: Fonts.body, color: Colors.text.secondary, textAlign: 'center' },
-    link: { color: Colors.primary, fontFamily: Fonts.bodyBold },
-    websiteText: { fontSize: 12, fontFamily: Fonts.body, color: Colors.text.disabled, marginTop: 32 },
+    linkText: { fontSize: 16, fontFamily: Fonts.body, color: Colors.text.secondary, textAlign: 'center' },
+    link: { fontSize: 16, color: Colors.onPrimary, fontFamily: Fonts.displayBold },
+    websiteText: { fontSize: 18, fontFamily: Fonts.displayBold, color: Colors.text.disabled, marginTop: 32 },
 });
