@@ -18,7 +18,7 @@ function TabPngIcon({
         <View style={styles.iconCol}>
             <Image
                 source={source}
-                style={[styles.tabIconImg, { opacity: focused ? 1 : 0.4 }]}
+                style={[styles.tabIconImg,]}
                 resizeMode="contain"
                 accessibilityIgnoresInvertColors
             />
@@ -140,13 +140,14 @@ const styles = StyleSheet.create({
         height: 5,
     },
     label: {
-        fontSize: 13,
+        fontSize: 16,
         marginTop: 2,
+        fontFamily: Fonts.bodyBold
     },
     labelActive: {
         fontFamily: Fonts.bodyBold,
     },
     labelInactive: {
-        fontFamily: Fonts.body,
+        fontFamily: Fonts.bodyBold,
     },
 });

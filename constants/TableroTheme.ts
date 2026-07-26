@@ -41,7 +41,7 @@ export function buildTableroTheme(colors: AppColorPalette) {
 
         tabBarBg: colors.surfaceContainerLowest,
         tabBarActive: colors.primary,
-        tabInactive: colors.text.disabled,
+        tabInactive: colors.text.secondary,
 
         /** FraseBar (rediseño slots semánticos) */
         fraseBarBg: '#FFFFFF',

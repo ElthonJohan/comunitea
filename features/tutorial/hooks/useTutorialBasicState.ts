@@ -27,27 +27,26 @@ export function useTutorialBasicState() {
     }, []);
 
     const { starSlots, starsFilled } = useMemo(() => {
+        const slots = 4;
         switch (currentStep) {
             case 'b_ex0_base':
+                return { starSlots: slots, starsFilled: 0 };
             case 'b_ex0_correct':
             case 'b_ex1_base':
-                return { starSlots: 2 as const, starsFilled: 0 };
+                return { starSlots: slots, starsFilled: 1 };
             case 'b_ex1_correct':
-                return { starSlots: 2 as const, starsFilled: 2 };
             case 'b_ex2_base':
             case 'b_ex2_incorrect':
-                return { starSlots: 3 as const, starsFilled: 0 };
+                return { starSlots: slots, starsFilled: 2 };
             case 'b_ex2_correct':
-                return { starSlots: 3 as const, starsFilled: 3 };
             case 'b_ex3_base':
             case 'b_ex3_incorrect':
-                return { starSlots: 3 as const, starsFilled: 0 };
+                return { starSlots: slots, starsFilled: 3 };
             case 'b_ex3_correct':
-                return { starSlots: 3 as const, starsFilled: 3 };
             case 'b_celebration':
-                return { starSlots: 3 as const, starsFilled: 3 };
+                return { starSlots: slots, starsFilled: 4 };
             default:
-                return { starSlots: 3 as const, starsFilled: 0 };
+                return { starSlots: slots, starsFilled: 0 };
         }
     }, [currentStep]);
 

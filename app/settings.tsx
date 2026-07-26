@@ -14,7 +14,7 @@ import {
     TextInput,
 } from 'react-native';
 import type { ThemeColor, AppColorPalette } from '../constants/Colors';
-import { Palettes } from '../constants/Colors';
+import { Colors, Palettes } from '../constants/Colors';
 import { useThemeColors } from '../context/AppThemeContext';
 import { useAppThemeStore } from '../stores/appThemeStore';
 import { Radii, Space, ShadowAmbientLight } from '../constants/Theme';
@@ -49,7 +49,7 @@ import { ROUTES, hrefCategorias } from '../types/routes';
 // Constantes de etiquetas (sin emojis corruptos - solo texto + iconos)
 // ---------------------------------------------------------------------------
 const VOICE_LABELS: Record<VoiceProfile, { label: string; sub: string; icon: string }> = {
-    femenina:  { label: 'Voz Femenina',  sub: 'Tono adulto femenino',  icon: 'person' },
+    femenina: { label: 'Voz Femenina', sub: 'Tono adulto femenino', icon: 'person' },
     masculina: { label: 'Voz Masculina', sub: 'Tono adulto masculino', icon: 'person-outline' },
 };
 
@@ -69,22 +69,22 @@ const GENDER_LABELS: Record<Gender, string> = {
 };
 
 const ENVIRONMENT_LABELS: Record<ActiveEnvironment, { label: string; icon: string }> = {
-    hogar:   { label: 'Hogar',   icon: 'home-outline' },
+    hogar: { label: 'Hogar', icon: 'home-outline' },
     escuela: { label: 'Escuela', icon: 'school-outline' },
     terapia: { label: 'Terapia', icon: 'medical-outline' },
 };
 
 const ANIMATION_LABELS: Record<AnimationIntensity, { label: string; sub: string }> = {
-    none:   { label: 'Sin animaciones', sub: 'Pantalla estática'      },
-    soft:   { label: 'Suaves',          sub: 'Transiciones ligeras'   },
-    normal: { label: 'Normal',          sub: 'Animaciones completas'  },
+    none: { label: 'Sin animaciones', sub: 'Pantalla estática' },
+    soft: { label: 'Suaves', sub: 'Transiciones ligeras' },
+    normal: { label: 'Normal', sub: 'Animaciones completas' },
 };
 
 const SPEED_OPTIONS: { label: string; sub: string; value: number }[] = [
     { label: 'Muy lenta', sub: '0.6×', value: 0.6 },
-    { label: 'Lenta',     sub: '0.8×', value: 0.8 },
-    { label: 'Normal',    sub: '1.0×', value: 1.0 },
-    { label: 'Rápida',    sub: '1.2×', value: 1.2 },
+    { label: 'Lenta', sub: '0.8×', value: 0.8 },
+    { label: 'Normal', sub: '1.0×', value: 1.0 },
+    { label: 'Rápida', sub: '1.2×', value: 1.2 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ function SelectModal({
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <Pressable style={modalSheet.backdrop} onPress={onClose}>
-                <Pressable style={modalSheet.sheet} onPress={() => {}}>
+                <Pressable style={modalSheet.sheet} onPress={() => { }}>
                     {/* Handle */}
                     <View style={modalSheet.handle} />
                     <Text style={modalSheet.title}>{title}</Text>
@@ -292,8 +292,8 @@ export default function SettingsScreen() {
     const handleAvatarPress = useCallback(() => {
         Alert.alert('Cambiar foto de perfil', 'Elige cómo quieres actualizar tu foto', [
             { text: 'Cancelar', style: 'cancel' },
-            { text: 'Cámara',   onPress: async () => { const url = await pickAndUploadImage(true);  if (url) await updateAvatar(url); } },
-            { text: 'Galería',  onPress: async () => { const url = await pickAndUploadImage(false); if (url) await updateAvatar(url); } },
+            { text: 'Cámara', onPress: async () => { const url = await pickAndUploadImage(true); if (url) await updateAvatar(url); } },
+            { text: 'Galería', onPress: async () => { const url = await pickAndUploadImage(false); if (url) await updateAvatar(url); } },
         ]);
     }, [pickAndUploadImage, updateAvatar]);
 
@@ -435,8 +435,8 @@ export default function SettingsScreen() {
     }
 
     const currentLevelInfo = levelLabels[profile?.level ?? 'BASICO'];
-    const currentSpeedOpt  = SPEED_OPTIONS.find((o) => o.value === settings?.tts_speed) ?? SPEED_OPTIONS[2];
-    const currentAnimInfo  = ANIMATION_LABELS[settings?.animation_intensity ?? 'normal'];
+    const currentSpeedOpt = SPEED_OPTIONS.find((o) => o.value === settings?.tts_speed) ?? SPEED_OPTIONS[2];
+    const currentAnimInfo = ANIMATION_LABELS[settings?.animation_intensity ?? 'normal'];
 
     return (
         <SafeAreaView style={styles.container}>
@@ -540,9 +540,9 @@ export default function SettingsScreen() {
                 onClose={() => setLimitModalOpen(false)}
                 options={[
                     { label: 'Desactivado', sub: 'Sin límite de tiempo', leftIcon: 'infinite-outline', leftColor: colors.text.secondary, selected: !settings?.daily_limit_minutes, onPress: () => updateDailyLimit(0) },
-                    { label: '15 minutos',  sub: 'Uso corto',            leftIcon: 'time-outline',     leftColor: colors.success,         selected: settings?.daily_limit_minutes === 15, onPress: () => updateDailyLimit(15) },
-                    { label: '30 minutos',  sub: 'Uso moderado',         leftIcon: 'time-outline',     leftColor: colors.warning,          selected: settings?.daily_limit_minutes === 30, onPress: () => updateDailyLimit(30) },
-                    { label: '60 minutos',  sub: 'Uso estándar',         leftIcon: 'time-outline',     leftColor: colors.danger,          selected: settings?.daily_limit_minutes === 60, onPress: () => updateDailyLimit(60) },
+                    { label: '15 minutos', sub: 'Uso corto', leftIcon: 'time-outline', leftColor: colors.success, selected: settings?.daily_limit_minutes === 15, onPress: () => updateDailyLimit(15) },
+                    { label: '30 minutos', sub: 'Uso moderado', leftIcon: 'time-outline', leftColor: colors.warning, selected: settings?.daily_limit_minutes === 30, onPress: () => updateDailyLimit(30) },
+                    { label: '60 minutos', sub: 'Uso estándar', leftIcon: 'time-outline', leftColor: colors.danger, selected: settings?.daily_limit_minutes === 60, onPress: () => updateDailyLimit(60) },
                 ]}
             />
 
@@ -657,13 +657,13 @@ export default function SettingsScreen() {
                 {/* -- GENERAL -- */}
                 <SectionHeader title="General" />
                 <Card>
-                    <Row icon="timer-outline"   label="Temporizador"        sub="Temporizador visual para tareas"  onPress={() => showTimer()} />
+                    <Row icon="timer-outline" label="Temporizador" sub="Temporizador visual para tareas" onPress={() => showTimer()} />
                     <RowSpacer />
-                    <Row icon="list"            label="Mis oraciones"       sub="Historial de frases"              onPress={() => router.push('/sentences' as any)} />
+                    <Row icon="list" label="Mis oraciones" sub="Historial de frases" onPress={() => router.push('/sentences' as any)} />
                     <RowSpacer />
-                    <Row icon="bar-chart"       label="Estadísticas de uso" sub="Reporte con actividad reciente"   onPress={() => router.push('/report' as any)} />
+                    <Row icon="bar-chart" label="Estadísticas de uso" sub="Reporte con actividad reciente" onPress={() => router.push('/report' as any)} />
                     <RowSpacer />
-                    <Row icon="volume-high"     label="Voz de pictogramas"  sub={VOICE_LABELS[voice].label}        onPress={() => setVoiceModalOpen(true)} />
+                    <Row icon="volume-high" label="Voz de pictogramas" sub={VOICE_LABELS[voice].label} onPress={() => setVoiceModalOpen(true)} />
                     <RowSpacer />
                     <Row
                         icon="chatbubble-outline"
@@ -684,7 +684,7 @@ export default function SettingsScreen() {
                 <Card>
                     <Text
                         style={{
-                            fontSize: 13,
+                            fontSize: 15,
                             fontFamily: Fonts.bodySemiBold,
                             color: colors.text.primary,
                             paddingHorizontal: 14,
@@ -695,9 +695,9 @@ export default function SettingsScreen() {
                     </Text>
                     <Text
                         style={{
-                            fontSize: 12,
+                            fontSize: 14,
                             fontFamily: Fonts.body,
-                            color: colors.text.secondary,
+                            color: colors.text.primary,
                             paddingHorizontal: 14,
                             paddingTop: 4,
                             paddingBottom: 10,
@@ -821,9 +821,9 @@ export default function SettingsScreen() {
                 {/* -- CONFIGURACIÓN SENSORIAL -- */}
                 <SectionHeader title="Configuración sensorial" />
                 <Card>
-                    <Row icon="speedometer-outline" label="Velocidad de la voz"       sub={`${currentSpeedOpt.label} (${currentSpeedOpt.sub})`} onPress={() => setSpeedModalOpen(true)} />
+                    <Row icon="speedometer-outline" label="Velocidad de la voz" sub={`${currentSpeedOpt.label} (${currentSpeedOpt.sub})`} onPress={() => setSpeedModalOpen(true)} />
                     <RowSpacer />
-                    <Row icon="sparkles-outline"    label="Intensidad de animaciones" sub={currentAnimInfo.label}                                onPress={() => setAnimModalOpen(true)} />
+                    <Row icon="sparkles-outline" label="Intensidad de animaciones" sub={currentAnimInfo.label} onPress={() => setAnimModalOpen(true)} />
                 </Card>
 
                 {/* -- CONFIGURACIÓN INICIAL -- */}
@@ -903,7 +903,7 @@ export default function SettingsScreen() {
 
                 {/* -- CERRAR SESIÓN -- */}
                 <TouchableOpacity
-                    style={[styles.logoutButton, signingOut && { opacity: 0.6 }]}
+                    style={[styles.logoutButton, signingOut && { opacity: 0 }]}
                     activeOpacity={0.7}
                     onPress={handleSignOut}
                     disabled={signingOut}
@@ -922,283 +922,286 @@ export default function SettingsScreen() {
 // ---------------------------------------------------------------------------
 function createSettingsScreenStyles(colors: AppColorPalette) {
     return StyleSheet.create({
-    container:     { flex: 1, backgroundColor: colors.surface },
-    scroll:        { paddingHorizontal: 20, paddingBottom: 40 },
-    profileHeader: { alignItems: 'center', paddingVertical: 24 },
-    avatarContainer: {
-        width: 120, height: 120, borderRadius: Radii.xl,
-        backgroundColor: colors.surfaceContainerLowest,
-        justifyContent: 'center', alignItems: 'center',
-        marginBottom: 12,
-        ...ShadowAmbientLight,
-        overflow: 'visible',
-    },
-    avatar:    { width: 120, height: 120, borderRadius: Radii.xl },
-    cameraIcon: {
-        position: 'absolute', bottom: 2, right: 2,
-        width: 28, height: 28, borderRadius: 14,
-        backgroundColor: colors.primary,
-        justifyContent: 'center', alignItems: 'center',
-        borderWidth: 2, borderColor: colors.surface,
-    },
-    username:  { fontSize: 22, fontFamily: Fonts.displayBold, color: colors.text.primary, marginBottom: 4 },
-    email:     { fontSize: 14, fontFamily: Fonts.body, color: colors.text.secondary },
-    firstSection: {
-        marginTop: 4,
-    },
-    childSectionLead: {
-        fontSize: 13,
-        fontFamily: Fonts.body,
-        color: colors.text.secondary,
-        paddingHorizontal: 14,
-        marginBottom: 12,
-        lineHeight: 18,
-    },
-    childEmptyWrap: {
-        paddingVertical: 12,
-        paddingHorizontal: 14,
-    },
-    childEmptyTitle: {
-        fontSize: 16,
-        fontFamily: Fonts.bodyBold,
-        color: colors.text.primary,
-        marginBottom: 8,
-    },
-    childEmptySub: {
-        fontSize: 14,
-        fontFamily: Fonts.body,
-        color: colors.text.secondary,
-        marginBottom: 16,
-        lineHeight: 20,
-    },
-    childEmptySecondary: {
-        marginTop: 4,
-        marginBottom: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-    },
-    childEmptySecondaryText: {
-        fontSize: 14,
-        fontFamily: Fonts.bodySemiBold,
-        color: colors.primary,
-        textDecorationLine: 'underline',
-    },
-    childAvatarWrap: {
-        alignSelf: 'center',
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 8,
-        overflow: 'visible',
-        ...ShadowAmbientLight,
-    },
-    childAvatarImg: { width: 100, height: 100, borderRadius: 50 },
-    childAvatarPh: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: colors.surfaceContainerHigh,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    childAvatarLetter: { fontSize: 36, fontFamily: Fonts.displayBold, color: colors.primary },
-    childCameraBadge: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: colors.surface,
-    },
-    childPhotoHint: {
-        textAlign: 'center',
-        fontSize: 12,
-        fontFamily: Fonts.body,
-        color: colors.text.secondary,
-        marginBottom: 16,
-        paddingHorizontal: 8,
-    },
-    childFieldLabel: {
-        fontSize: 12,
-        fontFamily: Fonts.bodyBold,
-        color: colors.text.secondary,
-        marginBottom: 6,
-        paddingHorizontal: 14,
-    },
-    childNameInput: {
-        marginHorizontal: 14,
-        marginBottom: 12,
-        paddingVertical: 12,
-        paddingHorizontal: 14,
-        borderRadius: Radii.md,
-        borderWidth: 1,
-        borderColor: colors.border,
-        fontSize: 16,
-        fontFamily: Fonts.body,
-        color: colors.text.primary,
-        backgroundColor: colors.surface,
-    },
-    childGenderRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: Space.md,
-        paddingHorizontal: 14,
-        gap: 12,
-    },
-    saveChildBtn: {
-        marginHorizontal: 14,
-        marginTop: 8,
-        marginBottom: 12,
-        paddingVertical: 14,
-        borderRadius: Radii.md,
-        backgroundColor: colors.primary,
-        alignItems: 'center',
-    },
-    saveChildBtnDisabled: { opacity: 0.6 },
-    saveChildBtnText: { fontSize: 15, fontFamily: Fonts.bodyBold, color: colors.onPrimary },
-    levelDot:  { width: 10, height: 10, borderRadius: 5 },
-    logoutButton: {
-        marginTop: 8,
-        paddingVertical: 18,
-        borderRadius: Radii.lg,
-        backgroundColor: colors.surfaceContainerLow,
-        alignItems: 'center',
-    },
-    logoutText: { fontSize: 16, fontFamily: Fonts.bodyBold, color: colors.danger },
+        container: { flex: 1, backgroundColor: colors.surface },
+        scroll: { paddingHorizontal: 20, paddingBottom: 40 },
+        profileHeader: { alignItems: 'center', paddingVertical: 24 },
+        avatarContainer: {
+            width: 120, height: 120, borderRadius: Radii.xl,
+            backgroundColor: colors.surfaceContainerLowest,
+            justifyContent: 'center', alignItems: 'center',
+            marginBottom: 12,
+            ...ShadowAmbientLight,
+            overflow: 'visible',
+        },
+        avatar: { width: 120, height: 120, borderRadius: Radii.xl },
+        cameraIcon: {
+            position: 'absolute', bottom: 2, right: 2,
+            width: 28, height: 28, borderRadius: 14,
+            backgroundColor: colors.primary,
+            justifyContent: 'center', alignItems: 'center',
+            borderWidth: 2, borderColor: colors.surface,
+        },
+        username: { fontSize: 22, fontFamily: Fonts.displayBold, color: colors.text.primary, marginBottom: 4 },
+        email: { fontSize: 14, fontFamily: Fonts.body, color: colors.text.secondary },
+        firstSection: {
+            marginTop: 8,
+            fontFamily: Fonts.body,
+            fontSize: 16,
+            color: colors.text.primary,
+            paddingHorizontal: 14,
+            lineHeight: 18,
+        },
+        childSectionLead: {
+            fontSize: 16,
+            fontFamily: Fonts.bodySemiBold,
+            color: colors.text.secondary,
+            paddingHorizontal: 14,
+            marginBottom: 8
+        },
+        childEmptyWrap: {
+            paddingVertical: 12,
+            paddingHorizontal: 14,
+        },
+        childEmptyTitle: {
+            fontSize: 16,
+            fontFamily: Fonts.bodyBold,
+            color: colors.text.primary,
+            marginBottom: 8,
+        },
+        childEmptySub: {
+            fontSize: 14,
+            fontFamily: Fonts.body,
+            color: colors.text.secondary,
+            marginBottom: 16,
+            lineHeight: 20,
+        },
+        childEmptySecondary: {
+            marginTop: 4,
+            marginBottom: 8,
+            paddingVertical: 12,
+            alignItems: 'center',
+        },
+        childEmptySecondaryText: {
+            fontSize: 14,
+            fontFamily: Fonts.bodySemiBold,
+            color: colors.primary,
+            textDecorationLine: 'underline',
+        },
+        childAvatarWrap: {
+            alignSelf: 'center',
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            marginBottom: 8,
+            overflow: 'visible',
+            ...ShadowAmbientLight,
+        },
+        childAvatarImg: { width: 100, height: 100, borderRadius: 50 },
+        childAvatarPh: {
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            backgroundColor: colors.surfaceContainerHigh,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        childAvatarLetter: { fontSize: 36, fontFamily: Fonts.displayBold, color: colors.primary },
+        childCameraBadge: {
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            width: 28,
+            height: 28,
+            borderRadius: 14,
+            backgroundColor: colors.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderWidth: 2,
+            borderColor: colors.surface,
+        },
+        childPhotoHint: {
+            textAlign: 'center',
+            fontSize: 14,
+            fontFamily: Fonts.bodySemiBold,
+            color: colors.text.secondary,
+            marginBottom: 16,
+            paddingHorizontal: 8,
+        },
+        childFieldLabel: {
+            fontSize: 15,
+            fontFamily: Fonts.bodyBold,
+            color: colors.text.secondary,
+            marginBottom: 6,
+            paddingHorizontal: 14,
+        },
+        childNameInput: {
+            marginHorizontal: 14,
+            marginBottom: 12,
+            paddingVertical: 12,
+            paddingHorizontal: 14,
+            borderRadius: Radii.md,
+            borderWidth: 1,
+            borderColor: colors.border,
+            fontSize: 16,
+            fontFamily: Fonts.body,
+            color: colors.text.primary,
+            backgroundColor: colors.surface,
+        },
+        childGenderRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: Space.md,
+            paddingHorizontal: 14,
+            gap: 12,
+        },
+        saveChildBtn: {
+            marginHorizontal: 14,
+            marginTop: 8,
+            marginBottom: 12,
+            paddingVertical: 14,
+            borderRadius: Radii.md,
+            backgroundColor: colors.primary,
+            alignItems: 'center',
+        },
+        saveChildBtnDisabled: { opacity: 0.6 },
+        saveChildBtnText: { fontSize: 15, fontFamily: Fonts.bodyBold, color: colors.onPrimary },
+        levelDot: { width: 10, height: 10, borderRadius: 5 },
+        logoutButton: {
+            marginTop: 8,
+            paddingVertical: 18,
+            borderRadius: Radii.lg,
+            backgroundColor: colors.surfaceContainerLow,
+            alignItems: 'center',
+        },
+        logoutText: { fontSize: 16, fontFamily: Fonts.bodyBold, color: Colors.text.primary },
     });
 }
 
 function createSectionStyles(colors: AppColorPalette) {
     return StyleSheet.create({
-    header: {
-        fontSize: 11,
-        fontFamily: Fonts.bodyBold,
-        color: colors.text.secondary,
-        letterSpacing: 1,
-        marginTop: 24,
-        marginBottom: Space.sm,
-        paddingHorizontal: 4,
-    },
-    card: {
-        backgroundColor: colors.surfaceContainerLowest,
-        borderRadius: Radii.lg,
-        paddingVertical: Space.sm,
-        ...ShadowAmbientLight,
-        overflow: 'hidden',
-    },
-    iconWrap: {
-        width: 36,
-        height: 36,
-        borderRadius: Radii.sm,
-        backgroundColor: colors.surfaceContainerHigh,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: Space.md,
-        paddingHorizontal: 14,
-        gap: 12,
-    },
-    rowText: { fontSize: 15, fontFamily: Fonts.bodySemiBold, color: colors.text.primary },
-    rowSub:  { fontSize: 12, fontFamily: Fonts.body, color: colors.text.secondary, marginTop: 1 },
-    rowSpacer: { height: Space.md },
+        header: {
+            fontSize: 16,
+            fontFamily: Fonts.bodyBold,
+            color: colors.primary,
+            marginTop: 24,
+            marginBottom: Space.sm,
+            paddingHorizontal: 4,
+        },
+        card: {
+            backgroundColor: colors.surfaceContainerLowest,
+            borderRadius: Radii.lg,
+            paddingVertical: Space.sm,
+            ...ShadowAmbientLight,
+            overflow: 'hidden',
+        },
+        iconWrap: {
+            width: 36,
+            height: 36,
+            borderRadius: Radii.sm,
+            backgroundColor: colors.surfaceContainerHigh,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: Space.md,
+            paddingHorizontal: 14,
+            gap: 12,
+        },
+        rowText: { fontSize: 15, fontFamily: Fonts.bodySemiBold, color: colors.text.primary },
+        rowSub: { fontSize: 16, fontFamily: Fonts.bodyBold, color: colors.text.secondary, marginTop: 1 },
+        rowSpacer: { height: Space.md },
     });
 }
 
 function createModalStyles(colors: AppColorPalette) {
     return StyleSheet.create({
-    backdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(29, 28, 18, 0.35)',
-        justifyContent: 'flex-end',
-    },
-    sheet: {
-        backgroundColor: colors.surfaceContainerLowest,
-        borderTopLeftRadius: Radii.xl,
-        borderTopRightRadius: Radii.xl,
-        paddingTop: 12,
-        paddingBottom: 36,
-        paddingHorizontal: 20,
-        borderTopWidth: 6,
-        borderTopColor: colors.secondaryContainer,
-        ...ShadowAmbientLight,
-    },
-    handle: {
-        alignSelf: 'center',
-        width: 40,
-        height: 5,
-        borderRadius: Radii.sm,
-        backgroundColor: colors.surfaceContainerHighest,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontFamily: Fonts.displayBold,
-        color: colors.text.primary,
-        textAlign: 'center',
-        marginBottom: 4,
-    },
-    subtitle: {
-        fontSize: 13,
-        fontFamily: Fonts.body,
-        color: colors.text.secondary,
-        textAlign: 'center',
-        marginBottom: 20,
-        lineHeight: 18,
-    },
-    optionsList: { gap: 8, marginBottom: 16 },
-    option: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-        backgroundColor: colors.surfaceContainerLow,
-        borderRadius: Radii.default,
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-    },
-    optionSelected: {
-        backgroundColor: colors.surfaceContainerHigh,
-    },
-    optionIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: Radii.sm,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    optionLabel: {
-        fontSize: 16,
-        fontFamily: Fonts.bodySemiBold,
-        color: colors.text.primary,
-    },
-    optionLabelSelected: { color: colors.primary },
-    optionSub: {
-        fontSize: 12,
-        fontFamily: Fonts.body,
-        color: colors.text.secondary,
-        marginTop: 1,
-    },
-    optionCheck: {
-        width: 22,
-        height: 22,
-        borderRadius: 11,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 28, 18, 0.15)',
-    },
-    cancelBtn: {
-        backgroundColor: colors.surfaceContainerLow,
-        borderRadius: Radii.default,
-        paddingVertical: 16,
-        alignItems: 'center',
-        marginTop: 4,
-    },
-    cancelText: { fontSize: 15, fontFamily: Fonts.bodyBold, color: colors.text.secondary },
+        backdrop: {
+            flex: 1,
+            backgroundColor: 'rgba(29, 28, 18, 0.35)',
+            justifyContent: 'flex-end',
+        },
+        sheet: {
+            backgroundColor: colors.surfaceContainerLowest,
+            borderTopLeftRadius: Radii.xl,
+            borderTopRightRadius: Radii.xl,
+            paddingTop: 12,
+            paddingBottom: 36,
+            paddingHorizontal: 20,
+            borderTopWidth: 6,
+            borderTopColor: colors.secondaryContainer,
+            ...ShadowAmbientLight,
+        },
+        handle: {
+            alignSelf: 'center',
+            width: 40,
+            height: 5,
+            borderRadius: Radii.sm,
+            backgroundColor: colors.surfaceContainerHighest,
+            marginBottom: 20,
+        },
+        title: {
+            fontSize: 20,
+            fontFamily: Fonts.displayBold,
+            color: colors.text.primary,
+            textAlign: 'center',
+            marginBottom: 4,
+        },
+        subtitle: {
+            fontSize: 13,
+            fontFamily: Fonts.body,
+            color: colors.text.secondary,
+            textAlign: 'center',
+            marginBottom: 20,
+            lineHeight: 18,
+        },
+        optionsList: { gap: 8, marginBottom: 16 },
+        option: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 14,
+            backgroundColor: colors.surfaceContainerLow,
+            borderRadius: Radii.default,
+            paddingVertical: 14,
+            paddingHorizontal: 16,
+        },
+        optionSelected: {
+            backgroundColor: colors.surfaceContainerHigh,
+        },
+        optionIcon: {
+            width: 40,
+            height: 40,
+            borderRadius: Radii.sm,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        optionLabel: {
+            fontSize: 16,
+            fontFamily: Fonts.bodySemiBold,
+            color: colors.text.primary,
+        },
+        optionLabelSelected: { color: colors.primary },
+        optionSub: {
+            fontSize: 12,
+            fontFamily: Fonts.body,
+            color: colors.text.secondary,
+            marginTop: 1,
+        },
+        optionCheck: {
+            width: 22,
+            height: 22,
+            borderRadius: 11,
+            borderWidth: 1,
+            borderColor: 'rgba(29, 28, 18, 0.15)',
+        },
+        cancelBtn: {
+            backgroundColor: colors.surfaceContainerLow,
+            borderRadius: Radii.default,
+            paddingVertical: 16,
+            alignItems: 'center',
+            marginTop: 4,
+        },
+        cancelText: { fontSize: 15, fontFamily: Fonts.bodyBold, color: colors.text.secondary },
     });
 }
