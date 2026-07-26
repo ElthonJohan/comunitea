@@ -28,6 +28,7 @@ import { useVoice } from '../lib/hooks/useVoice';
 import { useEditMode } from '../context/EditModeContext';
 import { useTimer } from '../context/TimerContext';
 import { useParental, AnimationIntensity } from '../lib/hooks/useParental';
+import { useParentalBlock } from '../context/ParentalContext';
 import {
     useChildProfile,
     ActiveEnvironment,
@@ -217,7 +218,8 @@ export default function SettingsScreen() {
     const { voice, setVoice } = useVoice();
     const { isEditMode, enterEditMode, lockEditMode, changePinRequest } = useEditMode();
     const { showTimer } = useTimer();
-    const { settings, updateDailyLimit, updateSensoryConfig, updateGameMode, usedSecondsToday } = useParental();
+    const { settings, updateDailyLimit, updateSensoryConfig, updateGameMode } = useParental();
+    const { usedSecondsToday } = useParentalBlock();
     const { activeEnvironment, setEnvironment, childProfile, saveChildProfile, refreshChildProfile } =
         useChildProfile();
     const [signingOut, setSigningOut] = useState(false);

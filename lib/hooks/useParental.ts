@@ -19,6 +19,19 @@ export interface ParentalSettings {
     game_mode_enabled: boolean;
 }
 
+/**
+ * Timestamp del último write exitoso a Supabase (módulo-level, no por instancia).
+ * Evita que load() sobreescriba un valor recién guardado cuando el componente
+ * se desmonta y remonta rápidamente (navegación entre pantallas).
+ * Se resetea al cambiar de usuario para evitar datos stale entre sesiones.
+ */
+let _lastWriteTs = 0;
+let _lastWriteUid = '';
+const WRITE_STALE_MS = 3_000;
+
+/** UID del usuario previamente cargado — detecta logout / cambio de cuenta. */
+let _prevLoadUid: string | undefined = undefined;
+
 /** Fecha local YYYY-MM-DD (no UTC) para evitar resets antes de medianoche en GMT-. */
 function todayString(): string {
     const d = new Date();
@@ -39,6 +52,20 @@ export function useParental() {
 
     const load = useCallback(async () => {
         if (!user) return;
+
+        // Al cambiar de usuario (logout → login), invalidar la protección stale-write
+        // para que siempre se carguen los datos frescos del nuevo usuario.
+        if (_prevLoadUid !== user.id) {
+            _prevLoadUid = user.id;
+            _lastWriteTs = 0;
+            _lastWriteUid = '';
+        }
+
+        // Si se acaba de escribir para este usuario, no sobreescribir
+        if (_lastWriteUid === user.id && Date.now() - _lastWriteTs < WRITE_STALE_MS) {
+            setLoading(false);
+            return;
+        }
         const { data, error } = await supabase
             .from('parental_settings')
             .select('daily_limit_minutes, used_seconds_today, date_today, tts_speed, animation_intensity, game_mode_enabled')
@@ -56,23 +83,46 @@ export function useParental() {
                 animation_intensity: AnimationIntensity;
                 game_mode_enabled: boolean;
             };
-            setSettings({
+            const today = todayString();
+            const dateMatch = (row.date_today ?? '') === today;
+            const loaded: ParentalSettings = {
                 daily_limit_minutes:  row.daily_limit_minutes  ?? 30,
-                used_seconds_today:   row.used_seconds_today   ?? 0,
-                date_today:           row.date_today           ?? todayString(),
+                used_seconds_today:   dateMatch ? (row.used_seconds_today ?? 0) : 0,
+                date_today:           dateMatch ? today : today,
                 tts_speed:            row.tts_speed            ?? 1.0,
                 animation_intensity:  row.animation_intensity  ?? 'normal',
                 game_mode_enabled:    row.game_mode_enabled    ?? false,
+            };
+            // Monotonic guard: nunca decrementar used_seconds_today en el mismo día
+            setSettings((prev) => {
+                if (!prev) return loaded;
+                if (loaded.date_today === today && prev.date_today === today && loaded.used_seconds_today < prev.used_seconds_today) {
+                    return { ...loaded, used_seconds_today: prev.used_seconds_today };
+                }
+                return loaded;
             });
+            // Si la fecha no coincidía (cross-midnight / timezone mismatch), persistir el reset
+            if (!dateMatch) {
+                await supabase.from('parental_settings').upsert(
+                    { user_id: user.id, ...loaded },
+                    { onConflict: 'user_id' },
+                );
+            }
         } else {
-            setSettings({
+            const defaults: ParentalSettings = {
                 daily_limit_minutes:  30,
                 used_seconds_today:   0,
                 date_today:           todayString(),
                 tts_speed:            1.0,
                 animation_intensity:  'normal',
                 game_mode_enabled:    false,
-            });
+            };
+            setSettings(defaults);
+            // Crear la fila en Supabase de inmediato para que no quede huérfana
+            await supabase.from('parental_settings').upsert(
+                { user_id: user.id, ...defaults },
+                { onConflict: 'user_id' },
+            );
         }
         setLoading(false);
     }, [user?.id]);
@@ -82,8 +132,9 @@ export function useParental() {
     }, [load]);
 
     /**
-     * Acumula segundos de uso. Usa settingsRef para leer el valor más reciente
-     * y evitar race conditions cuando se llama múltiples veces en rápido sucesión.
+     * Acumula segundos de uso. Optimistic update: aplica el cambio en estado
+     * local ANTES del write async a Supabase, para que refresh() no sobreescriba
+     * con un valor stale durante transiciones de AppState (ej. Alert.alert).
      */
     const addUsedSeconds = useCallback(
         async (seconds: number) => {
@@ -96,6 +147,13 @@ export function useParental() {
             used += seconds;
             const dateToday = today;
 
+            // 1. Optimistic update inmediato
+            const optimistic = { ...s, used_seconds_today: used, date_today: dateToday };
+            setSettings(optimistic);
+            _lastWriteTs = Date.now();
+            _lastWriteUid = user.id;
+
+            // 2. Persistir a Supabase
             const { error } = await supabase
                 .from('parental_settings')
                 .upsert(
@@ -111,8 +169,11 @@ export function useParental() {
                     { onConflict: 'user_id' },
                 );
 
-            if (!error) {
-                setSettings((prev) => (prev ? { ...prev, used_seconds_today: used, date_today: dateToday } : null));
+            if (error) {
+                // Revertir en caso de error
+                setSettings(s);
+                _lastWriteTs = 0;
+                _lastWriteUid = '';
             }
         },
         [user?.id],
@@ -120,7 +181,8 @@ export function useParental() {
 
     /**
      * Actualiza el límite diario en minutos.
-     * Si se desactiva (0), resetea used_seconds_today para evitar bloqueos residuales.
+     * Optimistic update: aplica el cambio inmediatamente en estado local,
+     * persiste async a Supabase y revierte si falla.
      */
     const updateDailyLimit = useCallback(
         async (minutes: number) => {
@@ -129,7 +191,18 @@ export function useParental() {
             const today = todayString();
             const resetUsed = minutes === 0 ? 0
                 : s && s.date_today === today ? s.used_seconds_today : 0;
+            const prevSettings = s ? { ...s } : null;
 
+            // 1. Optimistic update inmediato
+            const optimistic: ParentalSettings = s
+                ? { ...s, daily_limit_minutes: minutes, used_seconds_today: resetUsed, date_today: today }
+                : { daily_limit_minutes: minutes, used_seconds_today: resetUsed, date_today: today,
+                    tts_speed: 1.0, animation_intensity: 'normal', game_mode_enabled: false };
+            setSettings(optimistic);
+            _lastWriteTs = Date.now();
+            _lastWriteUid = user.id;
+
+            // 2. Persistir a Supabase
             const { error } = await supabase.from('parental_settings').upsert(
                 {
                     user_id:              user.id,
@@ -143,10 +216,12 @@ export function useParental() {
                 { onConflict: 'user_id' },
             );
 
-            if (!error) {
-                setSettings((prev) => prev
-                    ? { ...prev, daily_limit_minutes: minutes, used_seconds_today: resetUsed, date_today: today }
-                    : null);
+            if (error) {
+                // 3. Revertir en caso de error
+                setSettings(prevSettings);
+                _lastWriteTs = 0;
+                _lastWriteUid = '';
+            } else {
                 await auditLog(user.id, 'daily_limit_minutes', String(s?.daily_limit_minutes ?? 0), String(minutes));
             }
         },
@@ -158,6 +233,12 @@ export function useParental() {
             const s = settingsRef.current;
             if (!user || !s) return;
             const next = { ...s, ...patch };
+            const prevSettings = { ...s };
+
+            // Optimistic update
+            setSettings(next);
+            _lastWriteTs = Date.now();
+            _lastWriteUid = user.id;
 
             const { error } = await supabase.from('parental_settings').upsert(
                 {
@@ -172,8 +253,11 @@ export function useParental() {
                 { onConflict: 'user_id' },
             );
 
-            if (!error) {
-                setSettings(next);
+            if (error) {
+                setSettings(prevSettings);
+                _lastWriteTs = 0;
+                _lastWriteUid = '';
+            } else {
                 for (const [key, value] of Object.entries(patch)) {
                     const oldVal = String(s[key as keyof ParentalSettings] ?? '');
                     await auditLog(user.id, key, oldVal, String(value));
@@ -187,6 +271,13 @@ export function useParental() {
         async (enabled: boolean) => {
             const s = settingsRef.current;
             if (!user || !s) return;
+            const prevSettings = { ...s };
+
+            // Optimistic update
+            const optimistic = { ...s, game_mode_enabled: enabled };
+            setSettings(optimistic);
+            _lastWriteTs = Date.now();
+            _lastWriteUid = user.id;
 
             const { error } = await supabase.from('parental_settings').upsert(
                 {
@@ -201,8 +292,11 @@ export function useParental() {
                 { onConflict: 'user_id' },
             );
 
-            if (!error) {
-                setSettings((prev) => prev ? { ...prev, game_mode_enabled: enabled } : null);
+            if (error) {
+                setSettings(prevSettings);
+                _lastWriteTs = 0;
+                _lastWriteUid = '';
+            } else {
                 await auditLog(user.id, 'game_mode_enabled', String(s.game_mode_enabled), String(enabled));
             }
         },
