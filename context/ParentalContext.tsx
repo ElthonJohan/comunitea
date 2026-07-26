@@ -1,12 +1,17 @@
 /**
  * ParentalContext.tsx
  * Muestra pantalla de bloqueo cuando se supera el límite de uso diario.
- * Desbloqueo con PIN (reutiliza EditModeContext).
+ * Desbloqueo con PIN y extensión de tiempo.
  *
  * Evaluación de bloqueo:
  *  - isTimeUp se calcula LOCALMENTE: displaySeconds >= limitSeconds.
  *  - NO se invoca signOut / logout al alcanzar el límite.
- *  - El overlay se muestra cuando isTimeUp && !bypass.
+ *  - El overlay se muestra cuando isTimeUp && !bypass && !!user.
+ *
+ * Funcionalidades del overlay:
+ *  - Botón "Soy Padre/Apoderado" → verifica PIN → permite extender tiempo.
+ *  - Botón "Cerrar sesión" → signOut y redirección automática a /login.
+ *  - Extensión de tiempo: +15, +30, +60 minutos al límite diario.
  *
  * Tracking de tiempo:
  *  1. setInterval cada 60 s para actualizar el contador local (UI reactiva).
@@ -21,10 +26,12 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { useParental } from '../lib/hooks/useParental';
-import { useEditMode } from './EditModeContext';
 import { useAuth } from './AuthContext';
 import { Colors } from '../constants/Colors';
+import { STORAGE_KEYS } from '../constants/StorageKeys';
+import PinModal from '../components/PinModal';
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000;
 const TICK_INTERVAL_MS = 60 * 1000;
@@ -42,22 +49,32 @@ function todayString(): string {
     return `${y}-${m}-${day}`;
 }
 
+// ---------------------------------------------------------------------------
+// Contexto
+// ---------------------------------------------------------------------------
+
 interface ParentalContextValue {
     usedSecondsToday: number;
     isBlocked: boolean;
+    /** Amplía el límite diario en `additionalMinutes` y oculta el overlay. */
+    extendTime: (additionalMinutes: number) => void;
 }
 
 const ParentalContext = createContext<ParentalContextValue | null>(null);
+
+// ---------------------------------------------------------------------------
+// Provider
+// ---------------------------------------------------------------------------
 
 export function ParentalProvider({ children }: { children: React.ReactNode }) {
     const {
         settings,
         usedSecondsToday,
         addUsedSeconds,
+        updateDailyLimit,
         refresh,
     } = useParental();
-    const { isEditMode, requestUnlock } = useEditMode();
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
     const [bypass, setBypass] = useState(false);
 
     const [displaySeconds, setDisplaySeconds] = useState(usedSecondsToday);
@@ -77,11 +94,9 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
         const settingsDate = settings?.date_today ?? '';
 
         if (settingsDate !== '' && settingsDate !== storedDateRef.current) {
-            // Fecha cambió (nuevo día o primera carga): permitir reset completo
             storedDateRef.current = settingsDate;
             setDisplaySeconds(usedSecondsToday);
         } else if (settingsDate === today || storedDateRef.current === today) {
-            // Mismo día: solo incrementar monotonamente
             setDisplaySeconds((prev) => Math.max(prev, usedSecondsToday));
         }
     }, [usedSecondsToday, settings?.date_today]);
@@ -109,16 +124,13 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
         if (remainingSeconds > 0 && remainingSeconds <= 120 && !hasWarnedRef.current) {
             hasWarnedRef.current = true;
 
-            // 1. Forzar flush del tiempo acumulado a Supabase antes del Alert
             flushToServerRef.current();
 
-            // 2. Persistir backup en AsyncStorage
             AsyncStorage.setItem(
                 TIMER_BACKUP_KEY,
                 JSON.stringify({ seconds: displaySeconds, date: todayString() }),
             ).catch(() => {});
 
-            // 3. Marcar Alert activa para suprimir refresh durante inactive→active
             alertActiveRef.current = true;
 
             Alert.alert(
@@ -187,7 +199,6 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const sub = AppState.addEventListener('change', (nextState) => {
             if (appStateRef.current === 'active' && nextState !== 'active') {
-                // Si el Alert causó el cambio, NO flush ni refresh
                 if (alertActiveRef.current) {
                     appStateRef.current = nextState;
                     return;
@@ -207,30 +218,177 @@ export function ParentalProvider({ children }: { children: React.ReactNode }) {
         return () => sub.remove();
     }, [flushToServer, refresh]);
 
+    // --- Extender tiempo: aumenta el límite diario y desbloquea la app ---
+    const extendTime = useCallback((additionalMinutes: number) => {
+        if (!settings) return;
+        const newLimitMinutes = settings.daily_limit_minutes + additionalMinutes;
+        updateDailyLimit(newLimitMinutes);
+        setBypass(true);
+        hasWarnedRef.current = false;
+    }, [settings, updateDailyLimit]);
+
+    // --- Cerrar sesión desde el overlay ---
+    const handleSignOut = useCallback(() => {
+        signOut().catch(() => {});
+    }, [signOut]);
+
     // --- Bloqueo local: isTimeUp evaluado en memoria ---
-    const showBlock = isTimeUp && !bypass;
+    // !!user evita que el overlay aparezca cuando no hay sesión (post-logout)
+    const showBlock = isTimeUp && !bypass && !!user;
 
     return (
-        <ParentalContext.Provider value={{ usedSecondsToday: displaySeconds, isBlocked: showBlock }}>
+        <ParentalContext.Provider value={{ usedSecondsToday: displaySeconds, isBlocked: showBlock, extendTime }}>
             {children}
-            {showBlock && <BlockOverlay onUnlock={requestUnlock} />}
+            {showBlock && (
+                <BlockOverlay onExtend={extendTime} onSignOut={handleSignOut} />
+            )}
         </ParentalContext.Provider>
     );
 }
 
-function BlockOverlay({ onUnlock }: { onUnlock: () => void }) {
+// ---------------------------------------------------------------------------
+// Overlay de bloqueo con PIN + extensión de tiempo
+// ---------------------------------------------------------------------------
+
+type OverlayStep = 'blocked' | 'pin' | 'extend';
+
+function BlockOverlay({ onExtend, onSignOut }: { onExtend: (min: number) => void; onSignOut: () => void }) {
+    const [step, setStep] = useState<OverlayStep>('blocked');
+    const [pinMode, setPinMode] = useState<'setup' | 'verify'>('verify');
+    const [storedPin, setStoredPin] = useState<string | null>(null);
+    const [pinModalVisible, setPinModalVisible] = useState(false);
+
+    useEffect(() => {
+        AsyncStorage.getItem(STORAGE_KEYS.PARENTAL_PIN).then(setStoredPin);
+    }, []);
+
+    const handleAdultPress = () => {
+        setPinMode(storedPin === null ? 'setup' : 'verify');
+        setPinModalVisible(true);
+    };
+
+    const handlePinSuccess = (pin: string) => {
+        if (pinMode === 'setup') {
+            AsyncStorage.setItem(STORAGE_KEYS.PARENTAL_PIN, pin).catch(() => {});
+            setStoredPin(pin);
+            setPinModalVisible(false);
+            setStep('extend');
+        } else {
+            if (pin === storedPin) {
+                setPinModalVisible(false);
+                setStep('extend');
+            } else {
+                setPinModalVisible(false);
+                setTimeout(() => setPinModalVisible(true), 100);
+            }
+        }
+    };
+
+    const handlePinCancel = () => {
+        setPinModalVisible(false);
+        setStep('blocked');
+    };
+
+    // --- Paso: seleccionar extensión de tiempo ---
+    if (step === 'extend') {
+        return <TimeExtensionPicker onSelect={onExtend} onBack={() => setStep('blocked')} />;
+    }
+
+    // --- Paso: pantalla de bloqueo con opciones ---
     return (
         <View style={overlayStyles.overlay}>
+            <View style={overlayStyles.iconContainer}>
+                <Ionicons name="time-outline" size={48} color={Colors.primary} />
+            </View>
+
             <Text style={overlayStyles.title}>Por hoy has llegado al límite</Text>
             <Text style={overlayStyles.subtitle}>
-                El tiempo de uso diario se ha completado. Si eres el adulto a cargo, puedes desbloquear con tu PIN.
+                El tiempo de uso diario se ha completado. Si eres el adulto a cargo, puedes ampliar el tiempo o cerrar sesión.
             </Text>
-            <TouchableOpacity style={overlayStyles.button} onPress={onUnlock} activeOpacity={0.8}>
-                <Text style={overlayStyles.buttonText}>Soy el adulto</Text>
+
+            <TouchableOpacity
+                style={overlayStyles.primaryButton}
+                onPress={handleAdultPress}
+                activeOpacity={0.8}
+            >
+                <Ionicons name="lock-open-outline" size={20} color={Colors.text.inverse} />
+                <Text style={overlayStyles.primaryButtonText}>Soy Padre / Apoderado</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={overlayStyles.secondaryButton}
+                onPress={onSignOut}
+                activeOpacity={0.8}
+            >
+                <Ionicons name="log-out-outline" size={20} color={Colors.danger} />
+                <Text style={overlayStyles.secondaryButtonText}>Cerrar sesión</Text>
+            </TouchableOpacity>
+
+            {pinModalVisible && (
+                <PinModal
+                    visible={pinModalVisible}
+                    mode={pinMode}
+                    title={pinMode === 'setup' ? 'Crear PIN Parental' : 'Zona de Padres'}
+                    subtitle={
+                        pinMode === 'setup'
+                            ? 'Elige un PIN de 4 dígitos para proteger la configuración'
+                            : 'Ingresa tu PIN para modificar el tiempo'
+                    }
+                    onSuccess={handlePinSuccess}
+                    onCancel={handlePinCancel}
+                />
+            )}
+        </View>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Selector de extensión de tiempo
+// ---------------------------------------------------------------------------
+
+function TimeExtensionPicker({ onSelect, onBack }: { onSelect: (min: number) => void; onBack: () => void }) {
+    const options = [
+        { label: '+15 minutos', minutes: 15, sub: 'Uso extendido', icon: 'add-circle-outline' as const },
+        { label: '+30 minutos', minutes: 30, sub: 'Uso moderado', icon: 'add-circle' as const },
+        { label: '+60 minutos', minutes: 60, sub: 'Uso completo', icon: 'checkmark-circle' as const },
+    ];
+
+    return (
+        <View style={overlayStyles.overlay}>
+            <View style={overlayStyles.iconContainer}>
+                <Ionicons name="hourglass-outline" size={48} color={Colors.primary} />
+            </View>
+
+            <Text style={overlayStyles.title}>Ampliar tiempo de uso</Text>
+            <Text style={overlayStyles.subtitle}>
+                Selecciona cuántos minutos adicionales deseas agregar al límite diario.
+            </Text>
+
+            {options.map((opt) => (
+                <TouchableOpacity
+                    key={opt.minutes}
+                    style={overlayStyles.timeOption}
+                    onPress={() => onSelect(opt.minutes)}
+                    activeOpacity={0.8}
+                >
+                    <Ionicons name={opt.icon} size={24} color={Colors.primary} />
+                    <View style={overlayStyles.timeOptionTextWrap}>
+                        <Text style={overlayStyles.timeOptionLabel}>{opt.label}</Text>
+                        <Text style={overlayStyles.timeOptionSub}>{opt.sub}</Text>
+                    </View>
+                </TouchableOpacity>
+            ))}
+
+            <TouchableOpacity style={overlayStyles.backButton} onPress={onBack} activeOpacity={0.8}>
+                <Text style={overlayStyles.backButtonText}>Volver</Text>
             </TouchableOpacity>
         </View>
     );
 }
+
+// ---------------------------------------------------------------------------
+// Estilos
+// ---------------------------------------------------------------------------
 
 const overlayStyles = StyleSheet.create({
     overlay: {
@@ -245,33 +403,107 @@ const overlayStyles = StyleSheet.create({
         padding: 32,
         zIndex: 9999,
     },
+    iconContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: Colors.primaryContainer,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: Colors.text.primary,
         textAlign: 'center',
-        marginBottom: 12,
+        marginBottom: 8,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 15,
         color: Colors.text.secondary,
         textAlign: 'center',
-        marginBottom: 32,
+        marginBottom: 28,
+        lineHeight: 22,
     },
-    button: {
+    primaryButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
         backgroundColor: Colors.primary,
-        paddingVertical: 16,
-        paddingHorizontal: 32,
+        paddingVertical: 14,
+        paddingHorizontal: 28,
         borderRadius: 24,
+        marginBottom: 14,
+        minWidth: 260,
+        justifyContent: 'center',
     },
-    buttonText: {
-        fontSize: 18,
+    primaryButtonText: {
+        fontSize: 16,
         fontWeight: 'bold',
         color: Colors.text.inverse,
     },
+    secondaryButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        backgroundColor: Colors.surfaceContainerLow,
+        paddingVertical: 14,
+        paddingHorizontal: 28,
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        minWidth: 260,
+        justifyContent: 'center',
+    },
+    secondaryButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.danger,
+    },
+    // --- TimeExtensionPicker ---
+    timeOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+        backgroundColor: Colors.surfaceContainerLow,
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        marginBottom: 12,
+        width: '100%',
+    },
+    timeOptionTextWrap: {
+        flex: 1,
+    },
+    timeOptionLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: Colors.text.primary,
+    },
+    timeOptionSub: {
+        fontSize: 13,
+        color: Colors.text.secondary,
+        marginTop: 2,
+    },
+    backButton: {
+        marginTop: 8,
+        paddingVertical: 12,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: Colors.text.secondary,
+        fontWeight: '600',
+    },
 });
+
+// ---------------------------------------------------------------------------
+// Hook de consumo
+// ---------------------------------------------------------------------------
 
 export function useParentalBlock() {
     const ctx = useContext(ParentalContext);
-    return ctx ?? { usedSecondsToday: 0, isBlocked: false };
+    return ctx ?? { usedSecondsToday: 0, isBlocked: false, extendTime: () => {} };
 }

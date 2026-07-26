@@ -21,7 +21,13 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#f8f4e3"
       },
-      "package": "com.mandolabs.comunitea"
+      "package": "com.mandolabs.comunitea",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -51,9 +57,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "96235765-9cd5-4e8a-8562-989a9d4e514b"
+        "projectId": "3dcdb90a-0b9e-4e58-b324-c89feaa7fbe8"
       }
     },
-    "owner": "davs007"
+    "owner": "elthon_10"
   }
 }

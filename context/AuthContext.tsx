@@ -5,10 +5,11 @@ import { supabase } from '../lib/supabase';
 import { STORAGE_KEYS } from '../constants/StorageKeys';
 
 // Claves de AsyncStorage ligadas a un usuario concreto — se limpian al cerrar sesión
+// NOTA: TUTORIAL_COMPLETED y TUTORIAL_BASIC_COMPLETED NO se limpian aquí para que
+// el tutorial no reaparezca tras cerrar sesión y volver a iniciar sesión.
+// Solo se borran mediante "Repetir tutorial" en Ajustes o un borrado completo de datos.
 const USER_STORAGE_KEYS = [
     STORAGE_KEYS.ONBOARDING_COMPLETED,
-    STORAGE_KEYS.TUTORIAL_COMPLETED,
-    STORAGE_KEYS.TUTORIAL_BASIC_COMPLETED,
     STORAGE_KEYS.VOICE_PREFERENCE,
     STORAGE_KEYS.PARENTAL_PIN,
     STORAGE_KEYS.ELEVEN_CREDITS,
