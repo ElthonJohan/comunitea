@@ -8,7 +8,8 @@ export type ThemeColor = 'sage' | 'rojo' | 'azul';
 const baseSurface = {
   /** Base de pantalla (Linen) */
   surface: '#f8f4e3',
-  surfaceContainerLow: '#f48383ff',
+  surfaceContainerLow: '#fff3f3ff',
+  backgroundRedButton: '#ff5858ff',
   surfaceContainerLowest: '#ffffff',
   /** Hover / feedback suave en listas y tarjetas */
   surfaceContainerHigh: '#ebe8da',

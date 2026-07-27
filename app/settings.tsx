@@ -1070,7 +1070,7 @@ function createSettingsScreenStyles(colors: AppColorPalette) {
             marginTop: 8,
             paddingVertical: 18,
             borderRadius: Radii.lg,
-            backgroundColor: colors.surfaceContainerLow,
+            backgroundColor: colors.backgroundRedButton,
             alignItems: 'center',
         },
         logoutText: { fontSize: 16, fontFamily: Fonts.bodyBold, color: Colors.text.primary },
