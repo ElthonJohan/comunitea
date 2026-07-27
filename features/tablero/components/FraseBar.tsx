@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native';
 import { Fonts } from '../../../constants/Typography';
 import { TABLERO_CHILD_PICTO_ID } from '../../../constants/TableroTheme';
 import type { TableroThemeTokens } from '../../../constants/TableroTheme';
@@ -150,7 +150,7 @@ export default function FraseBar({
     const personaIsDefaultChild = slotPersona.id === TABLERO_CHILD_PICTO_ID;
 
     const onPersonaSlotPress = () => {
-        if (isBasico && personaIsDefaultChild) {
+        if (isBasico) {
             onOpenPersonaDrawer?.();
             return;
         }
@@ -171,48 +171,55 @@ export default function FraseBar({
             onPress={puedeHablar ? pressSpeak : undefined}
             accessibilityLabel={puedeHablar ? "Hablar frase completa" : "Frase vacía"}
         >
-            <SemanticSlot
-                styles={styles}
-                kind="persona"
-                pic={isBasico && personaIsDefaultChild ? null : slotPersona}
-                microLabel="Quién"
-                onPress={onPersonaSlotPress}
-            />
-            <SemanticSlot
-                styles={styles}
-                kind="peticion"
-                pic={slotPeticion}
-                microLabel="Qué"
-                onPress={onPeticionSlotPress}
-            />
-            <View style={styles.sep} />
-            <SemanticSlot styles={styles} kind="objeto" pic={slotsObjeto[0]} onPress={() => onRemoveSlot(2)} />
-            <SemanticSlot styles={styles} kind="objeto" pic={slotsObjeto[1]} onPress={() => onRemoveSlot(3)} />
-
-            <Pressable
-                onPress={onClear}
-                style={({ pressed }) => [styles.btnClear, pressed && styles.btnPressed]}
-                accessibilityLabel="Limpiar frase"
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
             >
-                <Text style={styles.btnClearText}>✕</Text>
-            </Pressable>
+                <SemanticSlot
+                    key={`slot-persona-${slotPersona.id}`}
+                    styles={styles}
+                    kind="persona"
+                    pic={slotPersona}
+                    microLabel="Quién"
+                    onPress={onPersonaSlotPress}
+                />
+                <SemanticSlot
+                    styles={styles}
+                    kind="peticion"
+                    pic={slotPeticion}
+                    microLabel="Qué"
+                    onPress={onPeticionSlotPress}
+                />
+                <View style={styles.sep} />
+                <SemanticSlot styles={styles} kind="objeto" pic={slotsObjeto[0]} onPress={() => onRemoveSlot(2)} />
+                <SemanticSlot styles={styles} kind="objeto" pic={slotsObjeto[1]} onPress={() => onRemoveSlot(3)} />
 
-            <Animated.View style={{ transform: [{ scale: speakScale }] }}>
                 <Pressable
-                    onPress={pressSpeak}
-                    disabled={!puedeHablar}
-                    style={({ pressed }) => [
-                        styles.btnSpeak,
-                        !puedeHablar && styles.btnSpeakDisabled,
-                        pressed && puedeHablar && styles.btnPressed,
-                    ]}
-                    accessibilityLabel="Hablar frase"
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    onPress={onClear}
+                    style={({ pressed }) => [styles.btnClear, pressed && styles.btnPressed]}
+                    accessibilityLabel="Limpiar frase"
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                    <Text style={styles.btnSpeakText}>▶</Text>
+                    <Text style={styles.btnClearText}>✕</Text>
                 </Pressable>
-            </Animated.View>
+
+                <Animated.View style={{ transform: [{ scale: speakScale }] }}>
+                    <Pressable
+                        onPress={pressSpeak}
+                        disabled={!puedeHablar}
+                        style={({ pressed }) => [
+                            styles.btnSpeak,
+                            !puedeHablar && styles.btnSpeakDisabled,
+                            pressed && puedeHablar && styles.btnPressed,
+                        ]}
+                        accessibilityLabel="Hablar frase"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                        <Text style={styles.btnSpeakText}>▶</Text>
+                    </Pressable>
+                </Animated.View>
+            </ScrollView>
         </Pressable>
     );
 }
@@ -220,9 +227,6 @@ export default function FraseBar({
 function createFraseBarStyles(T: TableroThemeTokens) {
     return StyleSheet.create({
     bar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: Space.sm,
         marginTop: 8,
         marginHorizontal: 12,
         paddingVertical: 6,
@@ -232,6 +236,12 @@ function createFraseBarStyles(T: TableroThemeTokens) {
         borderRadius: 11,
         borderWidth: 1,
         borderColor: T.fraseBarBorder,
+        overflow: 'hidden',
+    },
+    scrollContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Space.sm,
     },
     slotColumn: {
         alignItems: 'center',
@@ -272,7 +282,6 @@ function createFraseBarStyles(T: TableroThemeTokens) {
         backgroundColor: T.fraseClearBg,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 'auto',
     },
     btnClearText: {
         color: T.fraseClearFg,
